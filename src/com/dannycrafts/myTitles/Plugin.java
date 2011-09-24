@@ -152,11 +152,16 @@ public class Plugin extends JavaPlugin {
 					try
 					{
 						Database.update( "UPDATE players SET title_id = 0 WHERE name = '" + player.getName() + "';" );
-						player.sendMessage( "You are not wearing a title anymore." );
+						player.sendMessage( format( Messages.titleClear, "name", mainInterface.getPlayer( player.getName() ).getDisplayName() ) );
 					}
 					catch ( SQLException e )
 					{
 						printSqlError( e, "to list titles for player \"" + player.getName() + "\"" );
+						sendMessage( sender, Messages.internalError );
+					}
+					catch ( Exception e )
+					{
+						printError( e, "to list titles for player \"" + player.getName() + "\"" );
 						sendMessage( sender, Messages.internalError );
 					}
 				}
@@ -402,6 +407,7 @@ public class Plugin extends JavaPlugin {
 			Messages.playerOwnsTitle = config.getString( "message_player_owns_title", null );
 			Messages.playerNotExists = config.getString( "message_player_not_exists", null );
 			Messages.playerNotOwnsTitle = config.getString( "message_player_not_owns_title", null );
+			Messages.titleClear = config.getString( "message_title_clear", null );
 			Messages.titleExists = config.getString( "message_title_exists", null );
 			Messages.titleGiven = config.getString( "message_title_given", null );
 			Messages.titleNotExists = config.getString( "message_title_not_exists", null );
@@ -550,6 +556,7 @@ public class Plugin extends JavaPlugin {
 		public static String playerOwnsTitle;
 		public static String playerNotExists;
 		public static String playerNotOwnsTitle;
+		public static String titleClear;
 		public static String titleExists;
 		public static String titleGiven;
 		public static String titleNotExists;

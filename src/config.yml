@@ -48,6 +48,8 @@ message_player_owns_title: Player "$player_name$" already owns title "$title_nam
 message_player_not_exists: Player "$player_name$" doens't exist.
 # When a player doesn't own a title:
 message_player_not_owns_title: Player "$player_name$" doesn't own title "$title_name$".
+# When a player stops wearing a title by using the 'clear' command: (name)
+message_title_clear: You stopped using a title, you now look like "$name$".
 # When you try to register a title with a name that exists already: (title_name)
 message_title_exists: A title with the same name is registered already.
 # When you give a title to someone: (title_name, player_name)
