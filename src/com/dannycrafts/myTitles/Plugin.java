@@ -367,7 +367,7 @@ public class Plugin extends JavaPlugin {
 			// Connect to database:
 			Database.connect( sqlHost, sqlPort, sqlDatabase, sqlUsername, sqlPassword );
 			
-			// TODO: Install the database.
+			installDatabase();
 			
 			// Register events:
 			PluginManager pluginManager = this.getServer().getPluginManager();
@@ -386,6 +386,82 @@ public class Plugin extends JavaPlugin {
 			
 			printError( e, "enable MyTitles" );
 			print( "This plugin has not been enabled due to errors." );
+		}
+	}
+	
+	public void installDatabase() throws SQLException
+	{
+		try
+		{
+			Database.update( "CREATE TABLE collections (" +
+					"id bigint unsigned NOT NULL AUTO_INCREMENT," +
+					"player_id bigint unsigned NOT NULL," +
+					"title_id bigint unsigned DEFAULT NULL," +
+					"title_variation_id BIGINT UNSIGNED," +
+					"PRIMARY KEY (id)," +
+					"UNIQUE KEY uni (player_id,title_id)" +
+				");"
+			);
+		}
+		catch ( SQLException e )
+		{
+			if ( e.getErrorCode() != 1050 )
+				throw e;
+		}
+		
+		try
+		{
+			Database.update( "CREATE TABLE players (" +
+					"id bigint unsigned NOT NULL AUTO_INCREMENT," +
+					"name varchar(16) NOT NULL," +
+					"title_id bigint unsigned NOT NULL," +
+					"PRIMARY KEY (id)," +
+					"UNIQUE KEY uni (name)" +
+				");"
+			);
+		}
+		catch ( SQLException e )
+		{
+			if ( e.getErrorCode() != 1050 )
+				throw e;
+		}
+		
+		try
+		{			
+			Database.update( "CREATE TABLE titles (" +
+					"id bigint unsigned NOT NULL AUTO_INCREMENT," +
+					"plugin_id varchar(32) NOT NULL DEFAULT ''," +
+					"name varchar(16) NOT NULL," +
+					"prefix varchar(32) DEFAULT NULL," +
+					"suffix varchar(32) DEFAULT NULL," +
+					"PRIMARY KEY (id)," +
+					"UNIQUE KEY uni (name)" +
+				");"
+			);
+		}
+		catch ( SQLException e )
+		{
+			if ( e.getErrorCode() != 1050 )
+				throw e;
+		}
+		
+		try
+		{
+			Database.update( "CREATE TABLE title_variations (" +
+					"id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT," +
+					"title_id BIGINT UNSIGNED NOT NULL," +
+					"name VARCHAR(16) NOT NULL," +
+					"prefix VARCHAR(32)," +
+					"suffix VARCHAR(32)," +
+					"CONSTRAINT PRIMARY KEY( id )," +
+					"CONSTRAINT UNIQUE uni ( title_id, name )" +
+				");"
+			);
+		}
+		catch ( SQLException e )
+		{
+			if ( e.getErrorCode() != 1050 )
+				throw e;
 		}
 	}
 	
