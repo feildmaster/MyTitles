@@ -435,7 +435,7 @@ public class Plugin extends JavaPlugin {
 			Database.update( "CREATE TABLE players (" +
 					"id bigint unsigned NOT NULL AUTO_INCREMENT," +
 					"name varchar(16) NOT NULL," +
-					"title_id bigint unsigned NOT NULL," +
+					"title_id bigint unsigned NOT NULL DEFAULT 0," +
 					"PRIMARY KEY (id)," +
 					"UNIQUE KEY uni (name)" +
 				");"
