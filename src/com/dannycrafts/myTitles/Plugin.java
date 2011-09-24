@@ -145,6 +145,27 @@ public class Plugin extends JavaPlugin {
 					sendMessage( sender, Messages.noPermissions );
 			}
 			
+			else if ( args[0].equalsIgnoreCase( "clear" ) )
+			{
+				if ( sender.hasPermission( "mytitles.player.use" ) )
+				{
+					try
+					{
+						Database.update( "UPDATE players SET title_id = 0 WHERE name = '" + player.getName() + "';" );
+						player.sendMessage( "You are not wearing a title anymore." );
+					}
+					catch ( SQLException e )
+					{
+						printSqlError( e, "to list titles for player \"" + player.getName() + "\"" );
+						sendMessage( sender, Messages.internalError );
+					}
+				}
+				else if ( player == null )
+					sendMessage( sender, Messages.commandPlayerOnly );
+				else
+					sendMessage( sender, Messages.noPermissions );
+			}
+			
 			else if ( args[0].equalsIgnoreCase( "usenr" ) )
 			{
 				if ( sender.hasPermission( "mytitles.player.use" ) )
