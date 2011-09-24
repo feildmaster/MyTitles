@@ -24,8 +24,8 @@
 ##### General #####
 
 # These default affixes are used when a player is not using a title:
-default_prefix: L(
-default_suffix: )L
+default_prefix: 
+default_suffix: 
 # You can simply force the default affixes for everyone by turning the right permissions off.
 
 ##### Messages #####
