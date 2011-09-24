@@ -23,10 +23,10 @@
 
 ##### General #####
 
-# The default title is used when a player doesn't have any title set.
-default_title: ''
-# Set the following to true if you want to players to not be able to use any other title than the default title:
-force_default: false
+# These default affixes are used when a player is not using a title:
+default_prefix: L(
+default_suffix: )L
+# You can simply force the default affixes for everyone by turning the right permissions off.
 
 ##### Messages #####
 

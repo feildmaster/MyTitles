@@ -368,6 +368,10 @@ public class Plugin extends JavaPlugin {
 			String sqlPassword = config.getString( "sql_password", "" );
 			String sqlDatabase = config.getString( "sql_database", "my_titles" );
 
+			String defaultPrefix = config.getString( "default_prefix", "" );
+			String defaultSuffix = config.getString( "default_suffix", "" );
+			Settings.defaultAffixes = new Title.Affixes( defaultPrefix, defaultSuffix );
+
 			Messages.commandPlayerOnly = config.getString( "message_command_player_only", null );
 			Messages.internalError = config.getString( "message_internal_error", null );
 			Messages.invalidTitleName = config.getString( "message_invalid_title_name", null );
@@ -532,5 +536,10 @@ public class Plugin extends JavaPlugin {
 		public static String titleTaken;
 		public static String titleUnregistered;
 		public static String titleUse;
+	}
+	
+	protected static class Settings
+	{
+		public static Title.Affixes defaultAffixes;
 	}
 }
