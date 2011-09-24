@@ -58,11 +58,16 @@ public class Player {
 	
 	public String getDisplayName() throws SQLException
 	{
-		ResultSet result = Database.query( "SELECT title_id FROM players WHERE id = " + id + " AND ( SELECT COUNT( * ) FROM collections WHERE player_id = " + id + " AND title_id = players.title_id ) > 0;" );
-		result.next();
+		ResultSet result = Database.query( "SELECT title_id FROM players WHERE id = " + id + ";" );
+		result.first();
 		long titleId = result.getInt( "title_id" );
+		if ( titleId == 0 )
+			return getDisplayName( Plugin.Settings.defaultAffixes );
 		
-		return getDisplayName( new Title( titleId ) );
+		result = Database.query( "SELECT id FROM collections WHERE player_id = " + id + " AND title_id = " + titleId + ";" );
+		if ( result.first() )
+			return getDisplayName( new Title( titleId ) );
+		return getDisplayName( Plugin.Settings.defaultAffixes );
 	}
 	
 	public String getName() throws SQLException
