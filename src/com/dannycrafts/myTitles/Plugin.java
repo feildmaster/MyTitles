@@ -367,6 +367,8 @@ public class Plugin extends JavaPlugin {
 			// Connect to database:
 			Database.connect( sqlHost, sqlPort, sqlDatabase, sqlUsername, sqlPassword );
 			
+			// TODO: Install the database.
+			
 			// Register events:
 			PluginManager pluginManager = this.getServer().getPluginManager();
 			pluginManager.registerEvent( Type.PLAYER_JOIN, playerListener, Priority.Normal, this );
