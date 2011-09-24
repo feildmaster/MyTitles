@@ -20,7 +20,7 @@
 
 package com.dannycrafts.myTitles;
 
-import java.io.File;
+import java.io.*;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
@@ -40,6 +40,25 @@ public class Plugin extends JavaPlugin {
 	
 	private PlayerListener playerListener = new PlayerListener( this );
 	protected MyTitles mainInterface = getInterface( "" );
+	
+	protected void copyFile( File original, File copy ) throws IOException, FileNotFoundException
+	{
+		FileInputStream fis = new FileInputStream( original );
+		FileOutputStream fos = new FileOutputStream( copy );
+		
+		byte[] buffer = new byte[1024];
+		while ( true )
+		{
+			int read = fis.read( buffer );
+			if ( read < 1024 )
+				break;
+			
+			fos.write( buffer );
+		}
+		
+		fos.close();
+		fis.close();
+	}
 	
 	protected String format( String message, String varName, String value )
 	{
@@ -336,6 +355,8 @@ public class Plugin extends JavaPlugin {
 			
 			// Load MySQL db driver
 			Class.forName("com.mysql.jdbc.Driver");
+			
+			// TODO: Install config.yml
 
 			// Load config.yml
 			Configuration config = new Configuration( new File( this.getDataFolder() + "/config.yml" ) );
