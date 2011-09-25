@@ -1,0 +1,65 @@
+# Copyright (C) 2011 by Danny de Jong
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+# 
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+# THE SOFTWARE.
+
+
+
+
+name: MyTitles
+main: com.dannycrafts.myTitles.Plugin
+version: 3.3.0a
+author: Dannycrafts
+dev-url: http://dev.bukkit.org/server-mods/mytitles/
+
+commands:
+    mytitles:
+        description: The MyTitles command
+        usage: /mytitles help
+    mt:
+        description: The MyTitles alias command
+        usage: /mt help
+
+permissions:
+    mytitles.*:
+        description: Gives access to all player and admin commands.
+        children:
+            mytitles.player: true
+            mytitles.admin: true
+    mytitles.player.*:
+        description: Gives access to all player commands.
+        children:
+            mytitles.player.use: true
+            mytitles.player.list: true
+    mytitles.player.use:
+        description: Allows you to use one of your titles, or to go vanilla.
+        default: true
+    mytitles.player.list:
+        description: Allows you to list your own titles.
+        default: true
+    mytitles.admin.*:
+        description: Gives access to all admin commands.
+        children:
+            mytitles.admin.titles: true
+            mytitles.admin.give: true
+    mytitles.admin.register:
+        description: Allows you to register and unregister titles.
+        default: op
+    mytitles.admin.distribute:
+        description: Allows you to give away titles to players.
+        default: op
