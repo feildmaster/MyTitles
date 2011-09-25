@@ -71,6 +71,6 @@ message_title_use: You are now called "$display_name$".
 sql_host: localhost
 sql_port: 3306
 sql_username: root
-sql_password: pass
+sql_password: 
 sql_database: my_titles
 sql_table_prefix: 
