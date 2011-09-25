@@ -36,35 +36,35 @@ public class Variation {
 	
 	public Affixes getAffixes() throws SQLException
 	{
-		ResultSet result = Database.query( "SELECT prefix, suffix FROM title_variations WHERE id = " + id + ";" );
+		ResultSet result = Database.query( "SELECT prefix, suffix FROM " + Database.formatTableName( "title_variations" ) + " WHERE id = " + id + ";" );
 		result.first();
 		return new Affixes( result.getString( "prefix" ), result.getString( "suffix" ) );
 	}
 	
 	public Info getInfo() throws SQLException
 	{
-		ResultSet result = Database.query( "SELECT name, prefix, suffix FROM title_variations WHERE id = " + id + ";" );
+		ResultSet result = Database.query( "SELECT name, prefix, suffix FROM " + Database.formatTableName( "title_variations" ) + " WHERE id = " + id + ";" );
 		result.first();
 		return new Info( result.getString( "name" ), result.getString( "prefix" ), result.getString( "suffix" ) );
 	}
 	
 	public String getName() throws SQLException
 	{
-		ResultSet result = Database.query( "SELECT name FROM title_variations WHERE id = " + id + ";" );
+		ResultSet result = Database.query( "SELECT name FROM " + Database.formatTableName( "title_variations" ) + " WHERE id = " + id + ";" );
 		result.first();
 		return result.getString( "name" );
 	}
 	
 	public String getPrefix() throws SQLException
 	{
-		ResultSet result = Database.query( "SELECT prefix FROM title_variations WHERE id = " + id + ";" );
+		ResultSet result = Database.query( "SELECT prefix FROM " + Database.formatTableName( "title_variations" ) + " WHERE id = " + id + ";" );
 		result.first();
 		return result.getString( "prefix" );
 	}
 	
 	public String getSuffix() throws SQLException
 	{
-		ResultSet result = Database.query( "SELECT suffix FROM title_variations WHERE id = " + id + ";" );
+		ResultSet result = Database.query( "SELECT suffix FROM " + Database.formatTableName( "title_variations" ) + " WHERE id = " + id + ";" );
 		result.first();
 		return result.getString( "suffix" );
 	}
@@ -93,28 +93,28 @@ public class Variation {
 	
 	public void setInfo( Info info ) throws SQLException
 	{
-		Database.update( "UPDATE title_variations SET name = " + Database.formatString( info.name ) + ", prefix = " + Database.formatString( info.affixes.prefix ) + ", postfix = " + Database.formatString( info.affixes.suffix ) + " WHERE id = " + id + ";" );
+		Database.update( "UPDATE " + Database.formatTableName( "title_variations" ) + " SET name = " + Database.formatString( info.name ) + ", prefix = " + Database.formatString( info.affixes.prefix ) + ", postfix = " + Database.formatString( info.affixes.suffix ) + " WHERE id = " + id + ";" );
 	}
 	
 	public void setPrefix( Affixes affixes ) throws SQLException
 	{
-		Database.update( "UPDATE title_variations SET prefix = " + Database.formatString( affixes.prefix ) + ", postfix = " + Database.formatString( affixes.suffix ) + " WHERE id = " + id + ";" );
+		Database.update( "UPDATE " + Database.formatTableName( "title_variations" ) + " SET prefix = " + Database.formatString( affixes.prefix ) + ", postfix = " + Database.formatString( affixes.suffix ) + " WHERE id = " + id + ";" );
 	}
 	
 	public void setPrefix( String prefix ) throws SQLException
 	{
-		Database.update( "UPDATE title_variations SET prefix = " + Database.formatString( prefix ) + " WHERE id = " + id + ";" );
+		Database.update( "UPDATE " + Database.formatTableName( "title_variations" ) + " SET prefix = " + Database.formatString( prefix ) + " WHERE id = " + id + ";" );
 	}
 	
 	public void setName( String name ) throws SQLException, Variation.InvalidNameException
 	{
 		if ( !isValidName( name ) ) throw new Variation.InvalidNameException();
-		Database.update( "UPDATE title_variations SET prefix = " + Database.formatString( name ) + " WHERE id = " + id + ";" );		
+		Database.update( "UPDATE " + Database.formatTableName( "title_variations" ) + " SET prefix = " + Database.formatString( name ) + " WHERE id = " + id + ";" );		
 	}
 	
 	public void setSuffix( String suffix ) throws SQLException
 	{
-		Database.update( "UPDATE title_variations SET suffix = " + Database.formatString( suffix ) + " WHERE id = " + id + ";" );
+		Database.update( "UPDATE " + Database.formatTableName( "title_variations" ) + " SET suffix = " + Database.formatString( suffix ) + " WHERE id = " + id + ";" );
 	}
 	
 	public static class Affixes

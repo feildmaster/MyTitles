@@ -37,7 +37,7 @@ public class MyTitles {
 	
 	public Player getPlayer( String playerName ) throws SQLException, Player.DoesntExistException
 	{
-		ResultSet result = Database.query( "SELECT id FROM players WHERE name = '" + playerName + "';" );
+		ResultSet result = Database.query( "SELECT id FROM " + Database.formatTableName( "players" ) + " WHERE name = '" + playerName + "';" );
 		if ( result.first() == false )
 			throw new Player.DoesntExistException();
 		
@@ -51,7 +51,7 @@ public class MyTitles {
 	
 	public Title getTitle( String titleName ) throws SQLException, Title.DoesntExistException
 	{
-		ResultSet result = Database.query( "SELECT id FROM titles WHERE name = '" + titleName + "' AND plugin_id = '" + usagePluginId + "';" );
+		ResultSet result = Database.query( "SELECT id FROM " + Database.formatTableName( "titles" ) + " WHERE name = '" + titleName + "' AND plugin_id = '" + usagePluginId + "';" );
 		if ( result.first() == false )
 			throw new Title.DoesntExistException();
 		
@@ -60,7 +60,7 @@ public class MyTitles {
 	
 	public ArrayList<Title> getTitles() throws SQLException
 	{
-		ResultSet result = Database.query( "SELECT id FROM titles WHERE plugin_id = '" + usagePluginId + "';" );
+		ResultSet result = Database.query( "SELECT id FROM " + Database.formatTableName( "titles" ) + " WHERE plugin_id = '" + usagePluginId + "';" );
 		ArrayList<Title> titles = new ArrayList<Title>();
 		while ( result.next() )
 		{
@@ -148,7 +148,7 @@ public class MyTitles {
 		try
 		{
 			if ( !isValidName( titleInfo.name ) ) throw new Title.InvalidNameException();
-			Database.update( "INSERT INTO titles ( name, plugin_id, prefix, suffix ) VALUES ( '" + titleInfo.name + "', '" + usagePluginId + "', " + Database.formatString( titleInfo.affixes.prefix ) + ", " + Database.formatString( titleInfo.affixes.suffix ) + " );" );
+			Database.update( "INSERT INTO " + Database.formatTableName( "titles" ) + " ( name, plugin_id, prefix, suffix ) VALUES ( '" + titleInfo.name + "', '" + usagePluginId + "', " + Database.formatString( titleInfo.affixes.prefix ) + ", " + Database.formatString( titleInfo.affixes.suffix ) + " );" );
 		}
 		catch ( SQLException e )
 		{
@@ -170,7 +170,7 @@ public class MyTitles {
 	
 	public void unregisterTitle( Title title ) throws SQLException
 	{
-		ResultSet result = Database.query( "SELECT player_id FROM collections WHERE title_id = " + title.id + ";" );
+		ResultSet result = Database.query( "SELECT player_id FROM " + Database.formatTableName( "collections" ) + " WHERE title_id = " + title.id + ";" );
 		while ( result.next() )
 		{
 		
@@ -181,8 +181,8 @@ public class MyTitles {
 				onlinePlayer.sendMessage( "You lost title \"" + title.getName() + "\"." );
 		}
 
-		Database.update( "DELETE FROM title_variations WHERE title_id = " + title.id + ";" );
-		Database.update( "DELETE FROM collections WHERE title_id = " + title.id + ";" );
-		Database.update( "DELETE FROM titles WHERE id = " + title.id + ";" );
+		Database.update( "DELETE FROM " + Database.formatTableName( "title_variations" ) + " WHERE title_id = " + title.id + ";" );
+		Database.update( "DELETE FROM " + Database.formatTableName( "collections" ) + " WHERE title_id = " + title.id + ";" );
+		Database.update( "DELETE FROM " + Database.formatTableName( "titles" ) + " WHERE id = " + title.id + ";" );
 	}
 }

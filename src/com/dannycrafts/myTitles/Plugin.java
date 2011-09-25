@@ -120,7 +120,7 @@ public class Plugin extends JavaPlugin {
 					{
 						try
 						{
-							int affected = Database.update( "UPDATE players SET title_id = ( SELECT id FROM titles WHERE name = '" + args[1] + "' ) WHERE name = '" + player.getName() + "';" );
+							int affected = Database.update( "UPDATE " + Database.formatTableName( "players" ) + " SET title_id = ( SELECT id FROM " + Database.formatTableName( "titles" ) + " WHERE name = '" + args[1] + "' ) WHERE name = '" + player.getName() + "';" );
 							if ( affected == 0 )
 								sendMessage( sender, format( Messages.noTitle, "title_name", args[1] ) );
 							else
@@ -151,7 +151,7 @@ public class Plugin extends JavaPlugin {
 				{
 					try
 					{
-						Database.update( "UPDATE players SET title_id = 0 WHERE name = '" + player.getName() + "';" );
+						Database.update( "UPDATE " + Database.formatTableName( "players" ) + " SET title_id = 0 WHERE name = '" + player.getName() + "';" );
 						player.sendMessage( format( Messages.titleClear, "name", mainInterface.getPlayer( player.getName() ).getDisplayName() ) );
 					}
 					catch ( SQLException e )
@@ -185,7 +185,7 @@ public class Plugin extends JavaPlugin {
 							{
 								Title selectedTitle = titles.get( selectNr - 1 );
 								
-								int affected = Database.update( "UPDATE players SET title_id = " + selectedTitle.id + " WHERE name = '" + player.getName() + "';" );
+								int affected = Database.update( "UPDATE " + Database.formatTableName( "players" ) + " SET title_id = " + selectedTitle.id + " WHERE name = '" + player.getName() + "';" );
 								if ( affected == 0 )
 									sendMessage( sender, format( Messages.noTitle, "title_name", selectedTitle.getName() ) );
 								else
@@ -446,7 +446,7 @@ public class Plugin extends JavaPlugin {
 	{
 		try
 		{
-			Database.update( "CREATE TABLE collections (" +
+			Database.update( "CREATE TABLE " + Database.formatTableName( "collections" ) + " (" +
 					"id bigint unsigned NOT NULL AUTO_INCREMENT," +
 					"player_id bigint unsigned NOT NULL," +
 					"title_id bigint unsigned DEFAULT NULL," +
@@ -464,7 +464,7 @@ public class Plugin extends JavaPlugin {
 		
 		try
 		{
-			Database.update( "CREATE TABLE players (" +
+			Database.update( "CREATE TABLE " + Database.formatTableName( "players" ) + " (" +
 					"id bigint unsigned NOT NULL AUTO_INCREMENT," +
 					"name varchar(16) NOT NULL," +
 					"title_id bigint unsigned NOT NULL DEFAULT 0," +
@@ -481,7 +481,7 @@ public class Plugin extends JavaPlugin {
 		
 		try
 		{			
-			Database.update( "CREATE TABLE titles (" +
+			Database.update( "CREATE TABLE " + Database.formatTableName( "titles" ) + " (" +
 					"id bigint unsigned NOT NULL AUTO_INCREMENT," +
 					"plugin_id varchar(32) NOT NULL DEFAULT ''," +
 					"name varchar(16) NOT NULL," +
@@ -500,7 +500,7 @@ public class Plugin extends JavaPlugin {
 		
 		try
 		{
-			Database.update( "CREATE TABLE title_variations (" +
+			Database.update( "CREATE TABLE " + Database.formatTableName( "title_variations" ) + " (" +
 					"id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT," +
 					"title_id BIGINT UNSIGNED NOT NULL," +
 					"name VARCHAR(16) NOT NULL," +

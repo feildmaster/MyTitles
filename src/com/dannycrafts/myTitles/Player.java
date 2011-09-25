@@ -58,13 +58,13 @@ public class Player {
 	
 	public String getDisplayName() throws SQLException
 	{
-		ResultSet result = Database.query( "SELECT title_id FROM players WHERE id = " + id + ";" );
+		ResultSet result = Database.query( "SELECT title_id FROM " + Database.formatTableName( "players" ) + " WHERE id = " + id + ";" );
 		result.first();
 		long titleId = result.getInt( "title_id" );
 		if ( titleId == 0 )
 			return getDisplayName( Plugin.Settings.defaultAffixes );
 		
-		result = Database.query( "SELECT id FROM collections WHERE player_id = " + id + " AND title_id = " + titleId + ";" );
+		result = Database.query( "SELECT id FROM " + Database.formatTableName( "collections" ) + " WHERE player_id = " + id + " AND title_id = " + titleId + ";" );
 		if ( result.first() )
 			return getDisplayName( new Title( titleId ) );
 		return getDisplayName( Plugin.Settings.defaultAffixes );
@@ -72,14 +72,14 @@ public class Player {
 	
 	public String getName() throws SQLException
 	{
-		ResultSet result = Database.query( "SELECT name FROM players WHERE id = " + id + ";" );
+		ResultSet result = Database.query( "SELECT name FROM " + Database.formatTableName( "players" ) + " WHERE id = " + id + ";" );
 		result.next();
 		return result.getString( "name" );
 	}
 	
 	public ArrayList<Title> getOwnedTitles() throws SQLException
 	{
-		ResultSet result = Database.query( "SELECT id FROM titles WHERE id IN ( SELECT title_id FROM collections WHERE player_id = " + id + " );" );
+		ResultSet result = Database.query( "SELECT id FROM " + Database.formatTableName( "titles" ) + " WHERE id IN ( SELECT title_id FROM " + Database.formatTableName( "collections" ) + " WHERE player_id = " + id + " );" );
 		
 		ArrayList<Title> list = new ArrayList<Title>();
 		while ( result.next() )
@@ -92,7 +92,7 @@ public class Player {
 	
 	public Variation getTitleVariation( Title title ) throws SQLException
 	{
-		ResultSet result = Database.query( "SELECT title_variation_id FROM collections WHERE player_id = " + id + " AND title_id = " + title.id + ";" );
+		ResultSet result = Database.query( "SELECT title_variation_id FROM " + Database.formatTableName( "collections" ) + " WHERE player_id = " + id + " AND title_id = " + title.id + ";" );
 		if ( result.first() == false ) return null;
 		return new Variation( title, result.getLong( "title_variation_id" ) );
 	}
@@ -101,7 +101,7 @@ public class Player {
 	{
 		try
 		{
-			Database.update( "INSERT INTO collections ( player_id, title_id ) VALUES ( " + id + ", " + title.id + " );" );
+			Database.update( "INSERT INTO " + Database.formatTableName( "collections" ) + " ( player_id, title_id ) VALUES ( " + id + ", " + title.id + " );" );
 
 			org.bukkit.entity.Player onlinePlayer = plugin.getServer().getPlayer( getName() );
 			if ( onlinePlayer != null )
@@ -117,19 +117,19 @@ public class Player {
 	
 	public void resetTitleVariation( Title title ) throws SQLException
 	{
-		Database.update( "UPDATE collections SET title_variation_id = NULL WHERE player_id = " + id + " AND title_id = " + title.id + ";" );
+		Database.update( "UPDATE " + Database.formatTableName( "collections" ) + " SET title_variation_id = NULL WHERE player_id = " + id + " AND title_id = " + title.id + ";" );
 	}
 	
 	public void setTitleVariation( Variation variation ) throws SQLException
 	{
-		Database.update( "UPDATE collections SET title_variation_id = " + variation.id + " WHERE player_id = " + id + " AND title_id = " + variation.title.id + ";" );
+		Database.update( "UPDATE " + Database.formatTableName( "collections" ) + " SET title_variation_id = " + variation.id + " WHERE player_id = " + id + " AND title_id = " + variation.title.id + ";" );
 	}
 	
 	public void takeTitle( Title title ) throws SQLException, Player.DoesntOwnTitleException
 	{
 		String titleName = title.getName();
 		
-		int affected = Database.update( "DELETE FROM collections WHERE player_id = " + id + " AND title_id = " + title.id + ";" );
+		int affected = Database.update( "DELETE FROM " + Database.formatTableName( "collections" ) + " WHERE player_id = " + id + " AND title_id = " + title.id + ";" );
 		if ( affected == 0 ) throw new DoesntOwnTitleException();
 		
 		org.bukkit.entity.Player onlinePlayer = plugin.getServer().getPlayer( getName() );

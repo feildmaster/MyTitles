@@ -40,7 +40,7 @@ public class PlayerListener extends org.bukkit.event.player.PlayerListener {
 		
 		try
 		{
-			Database.update( "INSERT INTO players ( name ) VALUES ( '" + event.getPlayer().getName() + "' );" );
+			Database.update( "INSERT INTO " + Database.formatTableName( "players" ) + " ( name ) VALUES ( '" + event.getPlayer().getName() + "' );" );
 			try
 			{
 				event.setJoinMessage( plugin.mainInterface.getPlayer( event.getPlayer() ).getDisplayName() + " joined the game." );
