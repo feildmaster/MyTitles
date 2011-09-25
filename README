@@ -24,4 +24,5 @@ All plugin information is posted here: http://dev.bukkit.org/server-mods/mytitle
 
 This plugin depends on a few other dependencies:
 	Bukkit 1185 - http://ci.bukkit.org/job/dev-Bukkit/lastBuild/
+	Spout - http://wiki.bukkit.org/Spout#For_developers
 	MySQL - http://dev.mysql.com/downloads/connector/j/
