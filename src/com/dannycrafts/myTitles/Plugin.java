@@ -41,23 +41,20 @@ public class Plugin extends JavaPlugin {
 	private PlayerListener playerListener = new PlayerListener( this );
 	protected MyTitles mainInterface = getInterface( "" );
 	
-	protected void copyFile( File original, File copy ) throws IOException, FileNotFoundException
-	{
-		FileInputStream fis = new FileInputStream( original );
-		FileOutputStream fos = new FileOutputStream( copy );
-		
+	protected void copyFile( InputStream original, OutputStream copy ) throws IOException, FileNotFoundException
+	{		
 		byte[] buffer = new byte[1024];
 		while ( true )
 		{
-			int read = fis.read( buffer );
+			int read = original.read( buffer );
+			copy.write( buffer, 0, read );
 			if ( read < 1024 )
 				break;
-			
-			fos.write( buffer );
 		}
 		
-		fos.close();
-		fis.close();
+		copy.flush();
+		copy.close();
+		original.close();
 	}
 	
 	protected String format( String message, String varName, String value )
