@@ -29,10 +29,12 @@ import java.sql.Statement;
 public class Database {
 	
 	private static Connection connection;
+	private static String tablePrefix;
 	
-	protected static void connect( String host, String port, String database, String username, String password ) throws SQLException {
+	protected static void connect( String host, String port, String database, String username, String password, String tablePrefix ) throws SQLException {
 		
 		connection = DriverManager.getConnection( "jdbc:mysql://" + host + ":" + port + "/" + database + "?user=" + username + "&password=" + password );
+		Database.tablePrefix = tablePrefix;
 	}
 	
 	protected static void disconnect() throws SQLException
@@ -51,6 +53,11 @@ public class Database {
 			return "'" + string + "'";
 		}
 		return "NULL";
+	}
+	
+	protected static String formatTableName( String tableName )
+	{
+		return Database.tablePrefix + tableName;
 	}
 	
 	protected static int update( String query ) throws SQLException {

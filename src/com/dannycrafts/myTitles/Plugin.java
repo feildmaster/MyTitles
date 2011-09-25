@@ -418,7 +418,7 @@ public class Plugin extends JavaPlugin {
 			Messages.titleUse = config.getString( "message_title_use", null );
 			
 			// Connect to database:
-			Database.connect( sqlHost, sqlPort, sqlDatabase, sqlUsername, sqlPassword );
+			Database.connect( sqlHost, sqlPort, sqlDatabase, sqlUsername, sqlPassword, sqlTablePrefix );
 			
 			installDatabase();
 			
