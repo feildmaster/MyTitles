@@ -393,6 +393,7 @@ public class Plugin extends JavaPlugin {
 			String sqlUsername = config.getString( "sql_username", "root" );
 			String sqlPassword = config.getString( "sql_password", "" );
 			String sqlDatabase = config.getString( "sql_database", "my_titles" );
+			String sqlTablePrefix = config.getString( "sql_table_prefix", "" );
 
 			String defaultPrefix = config.getString( "default_prefix", "" );
 			String defaultSuffix = config.getString( "default_suffix", "" );

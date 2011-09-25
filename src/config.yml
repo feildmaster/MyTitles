@@ -73,3 +73,4 @@ sql_port: 3306
 sql_username: root
 sql_password: pass
 sql_database: my_titles
+sql_table_prefix: 
