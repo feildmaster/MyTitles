@@ -22,7 +22,6 @@ package com.dannycrafts.myTitles;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 
 public class Title {
 	
@@ -102,14 +101,18 @@ public class Title {
 		return new Variation( this, 0L );
 	}
 	
-	public ArrayList<Variation> getVariations() throws SQLException
+	public Variation[] getVariations() throws SQLException
 	{
 		ResultSet result = Database.query( "SELECT id FROM " + Database.formatTableName( "title_variations" ) + " WHERE title_id = " + id + ";" );
+		result.last();
+		Variation[] variations = new Variation[result.getRow()];
+		result.beforeFirst();
 		
-		ArrayList<Variation> variations = new ArrayList<Variation>();
+		int i = 0;
 		while ( result.next() )
 		{
-			variations.add( new Variation( this, result.getLong( "id" ) ) );
+			variations[i] = new Variation( this, result.getLong( "id" ) );
+			i++;
 		}
 		
 		return variations;
@@ -132,20 +135,20 @@ public class Title {
 		return true;
 	}
 	
-	public void putVariations( ArrayList<Variation.Info> variations ) throws SQLException, Exception
+	public void putVariations( Variation.Info[] variations ) throws SQLException, Exception
 	{
-		ArrayList<Variation> existingVariations = getVariations();
+		Variation[] existingVariations = getVariations();
 		
-		for ( int i = 0; i < existingVariations.size(); i++ )
+		for ( int i = 0; i < existingVariations.length; i++ )
 		{
-			Variation existingVariation = existingVariations.get( i );
+			Variation existingVariation = existingVariations[i];
 			Variation.Info existingVariationInfo = existingVariation.getInfo();
 			Variation.Info variationInfo = null;
 			
 			boolean variationUsed = false;
-			for ( int j = 0; j < variations.size(); j++ )
+			for ( int j = 0; j < variations.length; j++ )
 			{
-				variationInfo = variations.get( j );
+				variationInfo = variations[j];
 				
 				if ( variationInfo.name.equalsIgnoreCase( existingVariationInfo.name ) )
 				{
@@ -157,7 +160,7 @@ public class Title {
 			if ( variationUsed == false )
 			{
 				removeVariation( existingVariation );
-				existingVariations.remove( i );
+				existingVariations[i] = null;;
 			}
 			else
 			{
@@ -170,14 +173,14 @@ public class Title {
 			}
 		}
 		
-		for ( int i = 0; i < variations.size(); i++ )
+		for ( int i = 0; i < variations.length; i++ )
 		{
-			Variation.Info variationInfo = variations.get( i );
+			Variation.Info variationInfo = variations[i];
 			
 			boolean variationFree = true;
-			for ( int j = 0; j < existingVariations.size(); j++ )
+			for ( int j = 0; j < existingVariations.length; j++ )
 			{
-				if ( variationInfo.name.equalsIgnoreCase( existingVariations.get( j ).getName() ) )
+				if ( existingVariations[j] != null && variationInfo.name.equalsIgnoreCase( existingVariations[j].getName() ) )
 				{
 					variationFree = false;
 					break;

@@ -22,7 +22,6 @@ package com.dannycrafts.myTitles;
 
 import java.io.*;
 import java.sql.SQLException;
-import java.util.ArrayList;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -79,12 +78,12 @@ public class Plugin extends JavaPlugin {
 				try
 				{
 					Player myTitlesPlayer = mainInterface.getPlayer( player );
-					ArrayList<Title> titles = myTitlesPlayer.getOwnedTitles();
-					if ( titles.size() != 0 )
+					Title[] titles = myTitlesPlayer.getOwnedTitles();
+					if ( titles.length != 0 )
 					{
-						for ( int i = 0; i < titles.size(); i++ )
+						for ( int i = 0; i < titles.length; i++ )
 						{
-							Title.Info titleInfo = titles.get( i ).getInfo();
+							Title.Info titleInfo = titles[i].getInfo();
 							sender.sendMessage( "#" + ( i + 1 ) + ": " + titleInfo.name + ": \"" + myTitlesPlayer.getDisplayName( titleInfo.affixes ) + "\"" );
 						}
 					}
@@ -177,10 +176,10 @@ public class Plugin extends JavaPlugin {
 						try
 						{
 							int selectNr = Integer.parseInt( args[1] );
-							ArrayList<Title> titles = mainInterface.getPlayer( player ).getOwnedTitles();
-							if ( selectNr > 0 && selectNr <= titles.size() )
+							Title[] titles = mainInterface.getPlayer( player ).getOwnedTitles();
+							if ( selectNr > 0 && selectNr <= titles.length )
 							{
-								Title selectedTitle = titles.get( selectNr - 1 );
+								Title selectedTitle = titles[selectNr - 1];
 								
 								int affected = Database.update( "UPDATE " + Database.formatTableName( "players" ) + " SET title_id = " + selectedTitle.id + " WHERE name = '" + player.getName() + "';" );
 								if ( affected == 0 )

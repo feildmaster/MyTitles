@@ -22,7 +22,6 @@ package com.dannycrafts.myTitles;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 
 public class MyTitles {
     
@@ -58,14 +57,21 @@ public class MyTitles {
 		return new Title( result.getLong( "id" ) );
 	}
 	
-	public ArrayList<Title> getTitles() throws SQLException
+	public Title[] getTitles() throws SQLException
 	{
 		ResultSet result = Database.query( "SELECT id FROM " + Database.formatTableName( "titles" ) + " WHERE plugin_id = '" + usagePluginId + "';" );
-		ArrayList<Title> titles = new ArrayList<Title>();
+		result.last();
+		Title[] titles = new Title[result.getRow()];
+		result.beforeFirst();
+		
+		int i = 0;
 		while ( result.next() )
 		{
-			titles.add( new Title( result.getLong( "id" ) ) );
+			titles[i] = new Title( result.getLong( "id" ) );
+			
+			i++;
 		}
+		
 		return titles;
 	}
 	
@@ -86,20 +92,20 @@ public class MyTitles {
 		return true;
 	}
 	
-	public void putTitles( ArrayList<Title.Info> titles ) throws SQLException, Exception
+	public void putTitles( Title.Info[] titles ) throws SQLException, Exception
 	{
-		ArrayList<Title> registeredTitles = getTitles();
+		Title[] registeredTitles = getTitles();
 		
-		for ( int i = 0; i < registeredTitles.size(); i++ )
+		for ( int i = 0; i < registeredTitles.length; i++ )
 		{
-			Title registeredTitle = registeredTitles.get( i );
+			Title registeredTitle = registeredTitles[i];
 			Title.Info registeredTitleInfo = registeredTitle.getInfo();
 			Title.Info titleInfo = null;
 			
 			boolean titleUsed = false;
-			for ( int j = 0; j < titles.size(); j++ )
+			for ( int j = 0; j < titles.length; j++ )
 			{
-				titleInfo = titles.get( j );
+				titleInfo = titles[j];
 				
 				if ( titleInfo.name.equalsIgnoreCase( registeredTitleInfo.name ) )
 				{
@@ -111,7 +117,7 @@ public class MyTitles {
 			if ( titleUsed == false )
 			{
 				unregisterTitle( registeredTitle );
-				registeredTitles.remove( i );
+				registeredTitles[i] = null;
 			}
 			else
 			{
@@ -124,14 +130,14 @@ public class MyTitles {
 			}
 		}
 		
-		for ( int i = 0; i < titles.size(); i++ )
+		for ( int i = 0; i < titles.length; i++ )
 		{
-			Title.Info titleInfo = titles.get( i );
+			Title.Info titleInfo = titles[i];
 			
 			boolean titleFree = true;
-			for ( int j = 0; j < registeredTitles.size(); j++ )
+			for ( int j = 0; j < registeredTitles.length; j++ )
 			{
-				if ( titleInfo.name.equalsIgnoreCase( registeredTitles.get( j ).getName() ) )
+				if ( registeredTitles[j] != null && titleInfo.name.equalsIgnoreCase( registeredTitles[j].getName() ) )
 				{
 					titleFree = false;
 					break;

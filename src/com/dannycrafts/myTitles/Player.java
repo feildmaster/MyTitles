@@ -22,7 +22,6 @@ package com.dannycrafts.myTitles;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 
 public class Player {
 
@@ -77,14 +76,18 @@ public class Player {
 		return result.getString( "name" );
 	}
 	
-	public ArrayList<Title> getOwnedTitles() throws SQLException
+	public Title[] getOwnedTitles() throws SQLException
 	{
 		ResultSet result = Database.query( "SELECT id FROM " + Database.formatTableName( "titles" ) + " WHERE id IN ( SELECT title_id FROM " + Database.formatTableName( "collections" ) + " WHERE player_id = " + id + " );" );
+		result.last();
+		Title[] list = new Title[result.getRow()];
 		
-		ArrayList<Title> list = new ArrayList<Title>();
+		result.beforeFirst();
+		int i = 0;
 		while ( result.next() )
 		{
-			list.add( new Title( result.getLong( "id" ) ) );
+			list[i] = new Title( result.getLong( "id" ) );
+			i++;
 		}
 		
 		return list;
