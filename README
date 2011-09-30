@@ -26,3 +26,7 @@ This plugin depends on a few other dependencies:
 	Bukkit 1185 - http://ci.bukkit.org/job/dev-Bukkit/lastBuild/
 	Spout - http://wiki.bukkit.org/Spout#For_developers
 	MySQL - http://dev.mysql.com/downloads/connector/j/
+
+Design Principles:
+- MyTitles should be a single jar file that can be up and running once installed.
+- The interface should be easy to understand. Basic functionality is easy to use without having to know the extended functionality. For example, it is easy to implement titles in your plugin without having to know about title variations.
