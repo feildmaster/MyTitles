@@ -31,9 +31,25 @@ public class Database {
 	private static Connection connection;
 	private static String tablePrefix;
 	
-	protected static void connect( String host, String port, String database, String username, String password, String tablePrefix ) throws SQLException {
+	protected static void connect( String host, String port, String database, String username, String password, String tablePrefix ) throws SQLException
+	{
+		try
+		{
+			connection = DriverManager.getConnection( "jdbc:mysql://" + host + ":" + port + "/" + database + "?user=" + username + "&password=" + password );
+		}
+		catch ( SQLException e )
+		{
+			if ( e.getErrorCode() == 1049 )
+			{
+				connection = DriverManager.getConnection( "jdbc:mysql://" + host + ":" + port + "/?user=" + username + "&password=" + password );
+			
+				Database.update( "CREATE DATABASE " + database + ";" );
+				Database.update( "USE " + database + ";" );
+			}
+			else
+				throw e;
+		}
 		
-		connection = DriverManager.getConnection( "jdbc:mysql://" + host + ":" + port + "/" + database + "?user=" + username + "&password=" + password );
 		Database.tablePrefix = tablePrefix;
 	}
 	
