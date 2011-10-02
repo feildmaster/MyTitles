@@ -439,12 +439,13 @@ public class Plugin extends JavaPlugin {
 		catch ( SQLException e )
 		{
 			printSqlError( e, "enable MyTitles" );
-			print( "This plugin has not been enabled due to errors, did you configure the database connection details correctly?" );
+			print( "Did you configure the database connection details correctly?" );
+			throw null;
 		}
 		catch ( Exception e ) {
 			
 			printError( e, "enable MyTitles" );
-			print( "This plugin has not been enabled due to errors." );
+			throw null;
 		}
 	}
 	
