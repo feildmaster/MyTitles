@@ -458,8 +458,8 @@ public class Plugin extends JavaPlugin {
 					"player_id bigint unsigned NOT NULL," +
 					"title_id bigint unsigned DEFAULT NULL," +
 					"title_variation_id BIGINT UNSIGNED," +
-					"PRIMARY KEY (id)," +
-					"UNIQUE KEY uni (player_id,title_id)" +
+					"CONSTRAINT key_collections PRIMARY KEY( id )," +
+					"CONSTRAINT uni_collections UNIQUE (player_id,title_id)" +
 				");"
 			);
 		}
@@ -475,8 +475,8 @@ public class Plugin extends JavaPlugin {
 					"id bigint unsigned NOT NULL AUTO_INCREMENT," +
 					"name varchar(16) NOT NULL," +
 					"title_id bigint unsigned NOT NULL DEFAULT 0," +
-					"PRIMARY KEY (id)," +
-					"UNIQUE KEY uni (name)" +
+					"CONSTRAINT key_players PRIMARY KEY( id )," +
+					"CONSTRAINT uni_players UNIQUE (name)" +
 				");"
 			);
 		}
@@ -494,8 +494,8 @@ public class Plugin extends JavaPlugin {
 					"name varchar(16) NOT NULL," +
 					"prefix varchar(32) DEFAULT NULL," +
 					"suffix varchar(32) DEFAULT NULL," +
-					"PRIMARY KEY (id)," +
-					"UNIQUE KEY uni (name)" +
+					"CONSTRAINT key_titles PRIMARY KEY( id )," +
+					"CONSTRAINT uni_titles UNIQUE(name)" +
 				");"
 			);
 		}
@@ -508,13 +508,13 @@ public class Plugin extends JavaPlugin {
 		try
 		{
 			Database.update( "CREATE TABLE " + Database.formatTableName( "title_variations" ) + " (" +
-					"id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT," +
-					"title_id BIGINT UNSIGNED NOT NULL," +
+					"id bigint unsigned NOT NULL AUTO_INCREMENT," +
+					"title_id bigint unsigned NOT NULL," +
 					"name VARCHAR(16) NOT NULL," +
 					"prefix VARCHAR(32)," +
 					"suffix VARCHAR(32)," +
-					"CONSTRAINT PRIMARY KEY( id )," +
-					"CONSTRAINT UNIQUE uni ( title_id, name )" +
+					"CONSTRAINT key_title_variations PRIMARY KEY( id )," +
+					"CONSTRAINT uni_title_variation UNIQUE( title_id, name )" +
 				");"
 			);
 		}
