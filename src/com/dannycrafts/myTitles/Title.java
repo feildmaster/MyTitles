@@ -41,7 +41,7 @@ public class Title {
 		}
 		catch ( SQLException e )
 		{
-			if ( e.getErrorCode() == 1062 )
+			if ( e.getErrorCode() == Database.Codes.uniqueDuplicate )
 				throw new Variation.AlreadyExistsException();
 			throw e;
 		}

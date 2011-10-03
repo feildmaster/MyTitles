@@ -112,7 +112,7 @@ public class Player {
 		}
 		catch ( SQLException e )
 		{
-			if ( e.getErrorCode() == 1062 )
+			if ( e.getErrorCode() == Database.Codes.uniqueDuplicate )
 				throw new Player.AlreadyOwnsTitleException();
 			throw e;
 		}

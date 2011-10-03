@@ -31,17 +31,20 @@ public class Database {
 	private static Connection connection;
 	private static String tablePrefix;
 	
-	protected static void connect( String host, String port, String database, String username, String password, String tablePrefix ) throws SQLException
+	protected static void connectHost( String type, String host, String port, String database, String username, String password, String tablePrefix ) throws SQLException
 	{
 		try
 		{
-			connection = DriverManager.getConnection( "jdbc:mysql://" + host + ":" + port + "/" + database + "?user=" + username + "&password=" + password );
+			connection = DriverManager.getConnection( "jdbc:" + type + "://" + host + ":" + port + "/" + database + "?user=" + username + "&password=" + password );
+		
+			Database.tablePrefix = tablePrefix;
+			setCodes( type );
 		}
 		catch ( SQLException e )
 		{
 			if ( e.getErrorCode() == 1049 )
 			{
-				connection = DriverManager.getConnection( "jdbc:mysql://" + host + ":" + port + "/?user=" + username + "&password=" + password );
+				connection = DriverManager.getConnection( "jdbc:" + type + "://" + host + ":" + port + "/?user=" + username + "&password=" + password );
 			
 				Database.update( "CREATE DATABASE " + database + ";" );
 				Database.update( "USE " + database + ";" );
@@ -49,8 +52,14 @@ public class Database {
 			else
 				throw e;
 		}
-		
+	}
+	
+	protected static void connectFile( String type, String file, String username, String password, String tablePrefix ) throws SQLException
+	{
+		connection = DriverManager.getConnection( "jdbc:" + type + ":" + file, username, password );
+			
 		Database.tablePrefix = tablePrefix;
+		setCodes( type );
 	}
 	
 	protected static void disconnect() throws SQLException
@@ -76,6 +85,20 @@ public class Database {
 		return Database.tablePrefix + tableName;
 	}
 	
+	private static void setCodes( String type )
+	{
+		if ( type.equals( "mysql" ) )
+		{
+			Codes.tableAlreadyExists = 1050;
+			Codes.uniqueDuplicate = 1062;
+		}
+		else if ( type.equals( "h2" ) )
+		{
+			Codes.tableAlreadyExists = 42101;
+			Codes.uniqueDuplicate = 23001;
+		}
+	}
+	
 	protected static int update( String query ) throws SQLException {
 		
 		Statement statement = connection.createStatement();
@@ -84,7 +107,13 @@ public class Database {
 	
 	protected static ResultSet query( String query ) throws SQLException {
 		
-		Statement statement = connection.createStatement();
+		Statement statement = connection.createStatement( ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY );
 		return statement.executeQuery( query );
+	}
+	
+	protected static class Codes
+	{
+		public static int tableAlreadyExists;
+		public static int uniqueDuplicate;
 	}
 }

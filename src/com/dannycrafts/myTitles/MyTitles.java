@@ -158,7 +158,7 @@ public class MyTitles {
 		}
 		catch ( SQLException e )
 		{
-			if ( e.getErrorCode() == 1062 ) // Duplicate error
+			if ( e.getErrorCode() == Database.Codes.uniqueDuplicate ) // Duplicate error
 				throw new Title.AlreadyExistsException();
 			throw e;
 		}

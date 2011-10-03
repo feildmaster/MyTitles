@@ -66,11 +66,19 @@ message_title_unregistered: Title "$title_name$" has been unregistered.
 message_title_use: You are now called "$display_name$".
 
 
-##### MySQL #####
+##### Database #####
 
-sql_host: localhost
-sql_port: 3306
-sql_username: root
-sql_password: 
-sql_database: my_titles
-sql_table_prefix: 
+# The way this is configured by default will work just fine.
+# The database type can be set to: "h2" or "mysql".
+# database_host, database_port, database_database are only used for mysql.
+# database_file is only used for h2.
+database_type: h2
+database_table_prefix: 
+
+database_file:
+
+database_host: localhost
+database_port: 3306
+database_username: root
+database_password: 
+database_database: my_titles

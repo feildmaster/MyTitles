@@ -375,8 +375,9 @@ public class Plugin extends JavaPlugin {
 		
 		try {
 			
-			// Load MySQL db driver
-			Class.forName("com.mysql.jdbc.Driver");
+			// Load database drivers
+			Class.forName( "com.mysql.jdbc.Driver" );
+			Class.forName( "org.h2.Driver" );
 			
 			// Make sure that the data folder exists:
 			if ( !getDataFolder().exists() )
@@ -393,13 +394,15 @@ public class Plugin extends JavaPlugin {
 			// Load config.yml
 			Configuration config = new Configuration( new File( this.getDataFolder() + "/config.yml" ) );
 			config.load();
-			
-			String sqlHost = config.getString( "sql_host", "localhost" );
-			String sqlPort = config.getString( "sql_port", "3306" );
-			String sqlUsername = config.getString( "sql_username", "root" );
-			String sqlPassword = config.getString( "sql_password", "" );
-			String sqlDatabase = config.getString( "sql_database", "my_titles" );
-			String sqlTablePrefix = config.getString( "sql_table_prefix", "" );
+
+			String dbType = config.getString( "database_type", "h2" );
+			String dbHost = config.getString( "database_host", "localhost" );
+			String dbPort = config.getString( "database_port", "3306" );
+			String dbFile = config.getString( "database_file", "" );
+			String dbUsername = config.getString( "database_username", "root" );
+			String dbPassword = config.getString( "database_password", "" );
+			String dbDatabase = config.getString( "database_database", "my_titles" );
+			String dbTablePrefix = config.getString( "database_table_prefix", "" );
 
 			String defaultPrefix = config.getString( "default_prefix", "" );
 			String defaultSuffix = config.getString( "default_suffix", "" );
@@ -424,7 +427,14 @@ public class Plugin extends JavaPlugin {
 			Messages.titleUse = config.getString( "message_title_use", null );
 			
 			// Connect to database:
-			Database.connect( sqlHost, sqlPort, sqlDatabase, sqlUsername, sqlPassword, sqlTablePrefix );
+			if ( dbType.equals("h2") )
+			{
+				if ( dbFile == null || dbFile.equals( "" ) )
+					dbFile = this.getDataFolder() + "/data";
+				Database.connectFile( dbType, dbFile, dbUsername, dbPassword, dbTablePrefix );
+			}
+			else if ( dbType.equals("mysql") )
+				Database.connectHost( dbType, dbHost, dbPort, dbDatabase, dbUsername, dbPassword, dbTablePrefix );
 			
 			installDatabase();
 			
@@ -440,12 +450,10 @@ public class Plugin extends JavaPlugin {
 		{
 			printSqlError( e, "enable MyTitles" );
 			print( "Did you configure the database connection details correctly?" );
-			throw null;
 		}
 		catch ( Exception e ) {
 			
 			printError( e, "enable MyTitles" );
-			throw null;
 		}
 	}
 	
@@ -465,7 +473,7 @@ public class Plugin extends JavaPlugin {
 		}
 		catch ( SQLException e )
 		{
-			if ( e.getErrorCode() != 1050 )
+			if ( e.getErrorCode() != Database.Codes.tableAlreadyExists )
 				throw e;
 		}
 		
@@ -482,7 +490,7 @@ public class Plugin extends JavaPlugin {
 		}
 		catch ( SQLException e )
 		{
-			if ( e.getErrorCode() != 1050 )
+			if ( e.getErrorCode() != Database.Codes.tableAlreadyExists )
 				throw e;
 		}
 		
@@ -501,7 +509,7 @@ public class Plugin extends JavaPlugin {
 		}
 		catch ( SQLException e )
 		{
-			if ( e.getErrorCode() != 1050 )
+			if ( e.getErrorCode() != Database.Codes.tableAlreadyExists )
 				throw e;
 		}
 		
@@ -520,7 +528,7 @@ public class Plugin extends JavaPlugin {
 		}
 		catch ( SQLException e )
 		{
-			if ( e.getErrorCode() != 1050 )
+			if ( e.getErrorCode() != Database.Codes.tableAlreadyExists )
 				throw e;
 		}
 	}
