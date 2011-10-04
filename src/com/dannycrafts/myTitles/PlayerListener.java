@@ -47,18 +47,18 @@ public class PlayerListener extends org.bukkit.event.player.PlayerListener {
 			}
 			catch ( DoesntExistException e )
 			{
-				plugin.printError( e, "to intercept player joined message" );
+				plugin.printError( e );
 			}
 			catch ( SQLException e )
 			{
-				plugin.printSqlError( e, "retrieve player \"" + event.getPlayer().getName() + "\" from the database." );
+				plugin.printSqlError( e );
 			}
 		}
 		catch ( SQLException e )
 		{
 			if ( e.getErrorCode() != 1062 )
 			{
-				plugin.printSqlError( e, "load player \"" + event.getPlayer().getName() + "\" into the database." );
+				plugin.printSqlError( e );
 			}
 		}
 	}
@@ -72,11 +72,11 @@ public class PlayerListener extends org.bukkit.event.player.PlayerListener {
 		}
 		catch ( Player.DoesntExistException e )
 		{
-			plugin.printError( e, "to intercept player chat" );
+			plugin.printError( e );
 		}
 		catch ( SQLException e )
 		{
-			plugin.printSqlError( e, "read the display name of player \"" + event.getPlayer().getName() + "\"." );
+			plugin.printSqlError( e );
 		}
 	}
 	
@@ -88,11 +88,11 @@ public class PlayerListener extends org.bukkit.event.player.PlayerListener {
 		}
 		catch ( DoesntExistException e )
 		{
-			plugin.printError( e, "to intercept player quit message" );
+			plugin.printError( e );
 		}
 		catch ( SQLException e )
 		{
-			plugin.printSqlError( e, "retrieve player \"" + event.getPlayer().getName() + "\" from the database." );
+			plugin.printSqlError( e );
 		}
 	}
 }

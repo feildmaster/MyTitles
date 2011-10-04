@@ -92,12 +92,12 @@ public class Plugin extends JavaPlugin {
 				}
 				catch ( Player.DoesntExistException e )
 				{
-					printError( e, "to list titles for player \"" + sender.getName() + "\"" );
+					printError( e );
 					sendMessage( sender, Messages.internalError );
 				}
 				catch ( SQLException e )
 				{
-					printSqlError( e, "to list titles for player \"" + sender.getName() + "\"" );
+					printSqlError( e );
 					sendMessage( sender, Messages.internalError );
 				}
 			}
@@ -124,11 +124,11 @@ public class Plugin extends JavaPlugin {
 						}
 						catch ( Player.DoesntExistException e )
 						{
-							printError( e, "to list titles for player \"" + player.getName() + "\"" );
+							printError( e );
 						}
 						catch ( SQLException e )
 						{
-							printSqlError( e, "to list titles for player \"" + player.getName() + "\"" );
+							printSqlError( e );
 							sendMessage( sender, Messages.internalError );
 						}
 					}
@@ -152,12 +152,12 @@ public class Plugin extends JavaPlugin {
 					}
 					catch ( SQLException e )
 					{
-						printSqlError( e, "to list titles for player \"" + player.getName() + "\"" );
+						printSqlError( e );
 						sendMessage( sender, Messages.internalError );
 					}
 					catch ( Exception e )
 					{
-						printError( e, "to list titles for player \"" + player.getName() + "\"" );
+						printError( e );
 						sendMessage( sender, Messages.internalError );
 					}
 				}
@@ -192,11 +192,11 @@ public class Plugin extends JavaPlugin {
 						}
 						catch ( Player.DoesntExistException e )
 						{
-							printError( e, "to list titles for player \"" + player.getName() + "\"" );
+							printError( e );
 						}
 						catch ( SQLException e )
 						{
-							printSqlError( e, "to list titles for player \"" + player.getName() + "\"" );
+							printSqlError( e );
 							sendMessage( sender, Messages.internalError );
 						}
 					}
@@ -235,7 +235,7 @@ public class Plugin extends JavaPlugin {
 							}
 							catch ( SQLException e )
 							{
-								printSqlError( e, "to register title \"" + args[1] + "\"" );
+								printSqlError( e );
 								sendMessage( sender, Messages.internalError );
 							}
 						}
@@ -266,7 +266,7 @@ public class Plugin extends JavaPlugin {
 						}
 						catch ( SQLException e )
 						{
-							printSqlError( e, "to unregister title \"" + args[1] + "\"" );
+							printSqlError( e );
 							sendMessage( sender, Messages.internalError );
 						}
 					}
@@ -304,7 +304,7 @@ public class Plugin extends JavaPlugin {
 						}
 						catch ( SQLException e )
 						{
-							printSqlError( e, "to give title \"" + args[2] + "\" to player \"" + args[1] + "\"" );
+							printSqlError( e );
 							sendMessage( sender, Messages.internalError );
 						}
 					}
@@ -341,7 +341,7 @@ public class Plugin extends JavaPlugin {
 						}
 						catch ( SQLException e )
 						{
-							printSqlError( e, "to take title \"" + args[2] + "\" to player \"" + args[1] + "\"" );
+							printSqlError( e );
 							sendMessage( sender, Messages.internalError );
 						}
 					}
@@ -367,7 +367,7 @@ public class Plugin extends JavaPlugin {
 		}
 		catch ( Exception e ) {
 			
-			printError( e, "enabling MyTitles" );
+			printError( e );
 		}
 	}
 	
@@ -448,12 +448,12 @@ public class Plugin extends JavaPlugin {
 		}
 		catch ( SQLException e )
 		{
-			printSqlError( e, "enable MyTitles" );
+			printSqlError( e );
 			print( "Did you configure the database connection details correctly?" );
 		}
 		catch ( Exception e ) {
 			
-			printError( e, "enable MyTitles" );
+			printError( e );
 		}
 	}
 	
@@ -543,15 +543,15 @@ public class Plugin extends JavaPlugin {
 		System.out.println( "[" + this.getDescription().getName() + "] " + message );
 	}
 	
-	public void printError( Exception e, String whatFailed ) {
+	public void printError( Exception e ) {
 		
-		print( "Failed " + whatFailed + ": " + e.getMessage() + "." );
+		print( "Unexpected error occurred." );
 		e.printStackTrace();
 	}
 	
-	public void printSqlError( SQLException e, String whatFailed ) {
+	public void printSqlError( SQLException e ) {
 		
-		print( "[SQL Error " + e.getErrorCode() + "] Failed " + whatFailed + ": " + e.getMessage() + "." );
+		print( "Unexpected SQL error occurred (" + e.getErrorCode() + ")." );
 		e.printStackTrace();
 	}
 	
