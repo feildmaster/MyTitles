@@ -376,7 +376,7 @@ public class Plugin extends JavaPlugin {
 	public void onEnable() {
 		
 		try {
-			
+
 			// Load database drivers
 			Class.forName( "com.mysql.jdbc.Driver" );
 			Class.forName( "org.h2.Driver" );
@@ -536,6 +536,38 @@ public class Plugin extends JavaPlugin {
 	}
 	
 	public void onLoad() {
+		
+		try
+		{
+			// Load database drivers
+			Class.forName( "com.mysql.jdbc.Driver" );
+			Class.forName( "org.h2.Driver" );
+			
+			// Make sure that the data folder exists:
+			if ( !getDataFolder().exists() )
+				getDataFolder().mkdir();
+			File dataFolder = new File( getDataFolder() + "/data" );
+			if ( !dataFolder.exists() )
+				dataFolder.mkdir();
+			
+			// Install config.yml
+			File configDestination = new File( getDataFolder() + "/config.yml" );
+			if ( !configDestination.exists() )
+			{
+				InputStream configResource = getClass().getResourceAsStream( "config.yml" );
+				copyFile( configResource, new FileOutputStream( configDestination ) );
+			}
+			
+			com.dannycrafts.myTitles.database.Database db = new com.dannycrafts.myTitles.database.Database( new File( this.getDataFolder() + "/data/test" ), (short)0 );
+		}
+		catch ( com.dannycrafts.myTitles.database.Database.DifferentVersionException  e )
+		{
+			print( "Database version 0 is required, but " + e.actualVersion + " is used." );
+		}
+		catch ( Exception e )
+		{
+			printError( e );
+		}
 		
 		print( "v" + this.getDescription().getVersion() );
 	}
