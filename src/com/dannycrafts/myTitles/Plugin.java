@@ -46,9 +46,11 @@ public class Plugin extends JavaPlugin {
 		while ( true )
 		{
 			int read = original.read( buffer );
-			copy.write( buffer, 0, read );
-			if ( read < 1024 )
+			
+			if ( read == -1 )
 				break;
+			
+			copy.write( buffer, 0, read );
 		}
 		
 		copy.flush();
