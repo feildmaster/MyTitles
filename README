@@ -24,8 +24,6 @@ All plugin information is posted here: http://dev.bukkit.org/server-mods/mytitle
 
 This plugin depends on a few other dependencies:
 	Bukkit 1185 - http://ci.bukkit.org/job/dev-Bukkit/lastBuild/
-	MySQL Connector - http://dev.mysql.com/downloads/connector/j/
-	H2 Jar File - http://www.h2database.com/html/download.html
 
 Design Principles:
 - MyTitles should be a single jar file that can be up and running once installed.
