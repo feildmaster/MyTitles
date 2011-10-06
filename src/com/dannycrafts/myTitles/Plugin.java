@@ -382,11 +382,6 @@ public class Plugin extends JavaPlugin {
 
 			// Load database drivers
 			Class.forName( "com.mysql.jdbc.Driver" );
-			Class.forName( "org.h2.Driver" );
-			
-			// Make sure that the data folder exists:
-			if ( !getDataFolder().exists() )
-				getDataFolder().mkdir();
 
 			// Load config.yml
 			Configuration config = new Configuration( new File( this.getDataFolder() + "/config.yml" ) );
