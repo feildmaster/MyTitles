@@ -42,6 +42,11 @@ public class Plugin extends JavaPlugin {
 	
 	private PlayerListener playerListener = new PlayerListener( this );
 	protected MyTitles mainInterface = getInterface( "" );
+
+	protected com.dannycrafts.myTitles.database.Database playerDatabase;
+	protected com.dannycrafts.myTitles.database.Database titleDatabase;
+	protected com.dannycrafts.myTitles.database.Database collectionDatabase;
+	protected com.dannycrafts.myTitles.database.Database titleVariationDatabase;
 	
 	protected void copyFile( InputStream original, OutputStream copy ) throws IOException, FileNotFoundException
 	{		
@@ -366,6 +371,12 @@ public class Plugin extends JavaPlugin {
 		
 		try {
 			
+			// Close databases:
+			playerDatabase.close();
+			titleDatabase.close();
+			collectionDatabase.close();
+			titleVariationDatabase.close();
+			
 			Database.disconnect();
 			
 			print( "Gracefully disabled." );
@@ -386,15 +397,19 @@ public class Plugin extends JavaPlugin {
 			// Load config.yml
 			Configuration config = new Configuration( new File( this.getDataFolder() + "/config.yml" ) );
 			config.load();
+			
+			// Open databases:
+			playerDatabase.open();
+			titleDatabase.open();
+			collectionDatabase.open();
+			titleVariationDatabase.open();
 
-			String dbType = config.getString( "database_type", "h2" );
-			String dbHost = config.getString( "database_host", "localhost" );
-			String dbPort = config.getString( "database_port", "3306" );
-			String dbFile = config.getString( "database_file", "" );
-			String dbUsername = config.getString( "database_username", "root" );
-			String dbPassword = config.getString( "database_password", "" );
-			String dbDatabase = config.getString( "database_database", "my_titles" );
-			String dbTablePrefix = config.getString( "database_table_prefix", "" );
+			String dbHost = config.getString( "sql_host", "localhost" );
+			String dbPort = config.getString( "sql_port", "3306" );
+			String dbUsername = config.getString( "sql_username", "root" );
+			String dbPassword = config.getString( "sql_password", "" );
+			String dbDatabase = config.getString( "sql_database", "my_titles" );
+			String dbTablePrefix = config.getString( "sql_table_prefix", "" );
 
 			String defaultPrefix = config.getString( "default_prefix", "" );
 			String defaultSuffix = config.getString( "default_suffix", "" );
@@ -418,17 +433,8 @@ public class Plugin extends JavaPlugin {
 			Messages.titleUnregistered = config.getString( "message_title_unregistered", null );
 			Messages.titleUse = config.getString( "message_title_use", null );
 			
-			// Connect to database:
-			if ( dbType.equals("h2") )
-			{
-				if ( dbFile == null || dbFile.equals( "" ) )
-					dbFile = this.getDataFolder() + "/data";
-				Database.connectFile( dbType, dbFile, dbUsername, dbPassword, dbTablePrefix );
-			}
-			else if ( dbType.equals("mysql") )
-				Database.connectHost( dbType, dbHost, dbPort, dbDatabase, dbUsername, dbPassword, dbTablePrefix );
-			
-			installDatabase();
+			// Connect to SQL database
+			Database.connectHost( "mysql", dbHost, dbPort, dbDatabase, dbUsername, dbPassword, dbTablePrefix );
 			
 			// Register events:
 			PluginManager pluginManager = this.getServer().getPluginManager();
@@ -449,82 +455,6 @@ public class Plugin extends JavaPlugin {
 		}
 	}
 	
-	public void installDatabase() throws SQLException
-	{
-		try
-		{
-			Database.update( "CREATE TABLE " + Database.formatTableName( "collections" ) + " (" +
-					"id bigint unsigned NOT NULL AUTO_INCREMENT," +
-					"player_id bigint unsigned NOT NULL," +
-					"title_id bigint unsigned DEFAULT NULL," +
-					"title_variation_id BIGINT UNSIGNED," +
-					"CONSTRAINT key_collections PRIMARY KEY( id )," +
-					"CONSTRAINT uni_collections UNIQUE (player_id,title_id)" +
-				");"
-			);
-		}
-		catch ( SQLException e )
-		{
-			if ( e.getErrorCode() != Database.Codes.tableAlreadyExists )
-				throw e;
-		}
-		
-		try
-		{
-			Database.update( "CREATE TABLE " + Database.formatTableName( "players" ) + " (" +
-					"id bigint unsigned NOT NULL AUTO_INCREMENT," +
-					"name varchar(16) NOT NULL," +
-					"title_id bigint unsigned NOT NULL DEFAULT 0," +
-					"CONSTRAINT key_players PRIMARY KEY( id )," +
-					"CONSTRAINT uni_players UNIQUE (name)" +
-				");"
-			);
-		}
-		catch ( SQLException e )
-		{
-			if ( e.getErrorCode() != Database.Codes.tableAlreadyExists )
-				throw e;
-		}
-		
-		try
-		{			
-			Database.update( "CREATE TABLE " + Database.formatTableName( "titles" ) + " (" +
-					"id bigint unsigned NOT NULL AUTO_INCREMENT," +
-					"plugin_id varchar(32) NOT NULL DEFAULT ''," +
-					"name varchar(16) NOT NULL," +
-					"prefix varchar(32) DEFAULT NULL," +
-					"suffix varchar(32) DEFAULT NULL," +
-					"CONSTRAINT key_titles PRIMARY KEY( id )," +
-					"CONSTRAINT uni_titles UNIQUE(name)" +
-				");"
-			);
-		}
-		catch ( SQLException e )
-		{
-			if ( e.getErrorCode() != Database.Codes.tableAlreadyExists )
-				throw e;
-		}
-		
-		try
-		{
-			Database.update( "CREATE TABLE " + Database.formatTableName( "title_variations" ) + " (" +
-					"id bigint unsigned NOT NULL AUTO_INCREMENT," +
-					"title_id bigint unsigned NOT NULL," +
-					"name VARCHAR(16) NOT NULL," +
-					"prefix VARCHAR(32)," +
-					"suffix VARCHAR(32)," +
-					"CONSTRAINT key_title_variations PRIMARY KEY( id )," +
-					"CONSTRAINT uni_title_variation UNIQUE( title_id, name )" +
-				");"
-			);
-		}
-		catch ( SQLException e )
-		{
-			if ( e.getErrorCode() != Database.Codes.tableAlreadyExists )
-				throw e;
-		}
-	}
-	
 	public void onLoad() {
 		
 		try
@@ -533,7 +463,7 @@ public class Plugin extends JavaPlugin {
 			Class.forName( "com.mysql.jdbc.Driver" );
 			Class.forName( "org.h2.Driver" );
 			
-			// Make sure that the data folder exists:
+			// Make sure that folders exist:
 			if ( !getDataFolder().exists() )
 				getDataFolder().mkdir();
 			File dataFolder = new File( getDataFolder() + "/data" );
@@ -548,16 +478,34 @@ public class Plugin extends JavaPlugin {
 				copyFile( configResource, new FileOutputStream( configDestination ) );
 			}
 			
+			// Install player database:
 			Header header = new Header();
 			header.addString( (short)16 );
 			header.addInt64();
-			com.dannycrafts.myTitles.database.Database db =
-					new com.dannycrafts.myTitles.database.Database( new File( this.getDataFolder() + "/data/test" ), (short)0, header );
-			db.open();
-			db.addRow( new StringCell( "Dannycrafts" ), new Int64Cell( 1 ) );
-			Row row1 = db.getRow( 0 );
-			db.close();
-			print( row1.readString( 0 ) + " - " + row1.readInt64( 1 ) );
+			playerDatabase = new com.dannycrafts.myTitles.database.Database( new File( this.getDataFolder() + "/data/players" ), (short)0, header );
+
+			// Install title database:
+			header = new Header();
+			header.addString( (short)32 ); // Plugin interface identifier
+			header.addString( (short)16 ); // Title name
+			header.addString( (short)32 ); // Prefix
+			header.addString( (short)32 ); // Suffix
+			titleDatabase = new com.dannycrafts.myTitles.database.Database( new File( this.getDataFolder() + "/data/titles" ), (short)0, header );
+			
+			// Install collection database:
+			header = new Header();
+			header.addInt64(); // Player index
+			header.addInt64(); // Title index
+			header.addInt64(); // Title variation index
+			collectionDatabase = new com.dannycrafts.myTitles.database.Database( new File( this.getDataFolder() + "/data/collections" ), (short)0, header );
+			
+			// Install title variation database:
+			header = new Header();
+			header.addInt64(); // Title index
+			header.addString( (short)16 ); // Variation name
+			header.addString( (short)32 ); // Prefix
+			header.addString( (short)32 ); // Suffix
+			titleVariationDatabase = new com.dannycrafts.myTitles.database.Database( new File( this.getDataFolder() + "/data/title_variations" ), (short)0, header );
 		}
 		catch ( com.dannycrafts.myTitles.database.Database.DifferentVersionException  e )
 		{
