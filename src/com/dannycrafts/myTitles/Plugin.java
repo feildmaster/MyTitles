@@ -387,14 +387,6 @@ public class Plugin extends JavaPlugin {
 			// Make sure that the data folder exists:
 			if ( !getDataFolder().exists() )
 				getDataFolder().mkdir();
-			
-			// Install config.yml
-			File configDestination = new File( getDataFolder() + "/config.yml" );
-			if ( !configDestination.exists() )
-			{
-				InputStream configResource = getClass().getResourceAsStream( "config.yml" );
-				copyFile( configResource, new FileOutputStream( configDestination ) );
-			}
 
 			// Load config.yml
 			Configuration config = new Configuration( new File( this.getDataFolder() + "/config.yml" ) );
