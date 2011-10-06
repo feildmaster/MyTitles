@@ -20,6 +20,8 @@
 
 package com.dannycrafts.myTitles;
 
+import com.dannycrafts.myTitles.database.*;
+
 import java.io.*;
 import java.sql.SQLException;
 
@@ -32,6 +34,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.config.Configuration;
 
 import com.dannycrafts.myTitles.Title.InvalidNameException;
+import com.dannycrafts.myTitles.database.StringCell;
 
 public class Plugin extends JavaPlugin {
 	
@@ -558,7 +561,16 @@ public class Plugin extends JavaPlugin {
 				copyFile( configResource, new FileOutputStream( configDestination ) );
 			}
 			
-			com.dannycrafts.myTitles.database.Database db = new com.dannycrafts.myTitles.database.Database( new File( this.getDataFolder() + "/data/test" ), (short)0 );
+			Header header = new Header();
+			header.addString( (short)16 );
+			header.addInt64();
+			com.dannycrafts.myTitles.database.Database db =
+					new com.dannycrafts.myTitles.database.Database( new File( this.getDataFolder() + "/data/test" ), (short)0, header );
+			db.open();
+			db.addRow( new StringCell( "Dannycrafts" ), new Int64Cell( 1 ) );
+			Row row1 = db.getRow( 0 );
+			db.close();
+			print( row1.readString( 0 ) + " - " + row1.readInt64( 1 ) );
 		}
 		catch ( com.dannycrafts.myTitles.database.Database.DifferentVersionException  e )
 		{
