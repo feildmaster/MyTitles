@@ -87,7 +87,7 @@ public class MyTitles {
 		return true;
 	}
 	
-	public void putTitles( Title.Info[] titles ) throws Exception
+	public void putTitles( Title.Info[] titles ) throws IOException, Title.InvalidNameException 
 	{
 		Title[] registeredTitles = getTitles();
 		
