@@ -1,7 +1,5 @@
 package com.dannycrafts.myTitles.database;
 
-import java.io.UnsupportedEncodingException;
-
 public class Row
 {
 	private long index;

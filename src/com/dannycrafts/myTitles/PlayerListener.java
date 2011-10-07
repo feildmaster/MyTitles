@@ -21,8 +21,6 @@
 package com.dannycrafts.myTitles;
 
 import java.io.IOException;
-import java.sql.SQLException;
-
 import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 
@@ -47,7 +45,7 @@ public class PlayerListener extends org.bukkit.event.player.PlayerListener {
 		}
 		catch ( IOException e )
 		{
-			plugin.printError( e );
+			Plugin.printError( e );
 		}
 	}
 	
@@ -60,7 +58,7 @@ public class PlayerListener extends org.bukkit.event.player.PlayerListener {
 		}
 		catch ( Exception e )
 		{
-			plugin.printError( e );
+			Plugin.printError( e );
 		}
 	}
 	
@@ -72,7 +70,7 @@ public class PlayerListener extends org.bukkit.event.player.PlayerListener {
 		}
 		catch ( Exception e )
 		{
-			plugin.printError( e );
+			Plugin.printError( e );
 		}
 	}
 }
