@@ -113,8 +113,9 @@ public class Database
 					boolean matches = true;
 					for ( short j = 0; j < searchCriteria.length; j++ )
 					{
-						seekCell( i, searchCriteria[j].cellIndex );
-						stream.read( buffer, 0, this.header.getCellLength( searchCriteria[j].cellIndex ) );
+						short cellIndex = searchCriteria[j].cellIndex;
+						seekCell( i, cellIndex );
+						stream.read( buffer, 0, this.header.getCellLength( cellIndex ) );
 						
 						if ( !searchCriteria[j].cellData.matches( buffer ) )
 						{
