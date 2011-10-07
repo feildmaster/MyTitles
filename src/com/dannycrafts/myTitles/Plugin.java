@@ -23,7 +23,6 @@ package com.dannycrafts.myTitles;
 import com.dannycrafts.myTitles.database.*;
 
 import java.io.*;
-import java.sql.SQLException;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
