@@ -63,10 +63,7 @@ public class Player {
 		if ( titleId < 0 )
 			return getDisplayName( Plugin.Settings.defaultAffixes );
 		
-		long rowIndex = Plugin.collectionDatabase.findRow( new SearchCriteria( (short)0, new Int64Cell( id ) ), new SearchCriteria( (short)0, new Int64Cell( titleId ) ) );
-		if ( rowIndex != -1 )
 		return getDisplayName( new Title( titleId ) );
-		return getDisplayName( Plugin.Settings.defaultAffixes );
 	}
 	
 	public String getName() throws IOException
@@ -106,7 +103,10 @@ public class Player {
 		if ( collection == -1 ) return null;
 		
 		Row row = Plugin.collectionDatabase.getRow( collection );
-		return new Variation( title.id, row.readInt64( 2 ) );
+		long var = row.readInt64( 2 );
+		if ( var == -1 ) return null;
+		
+		return new Variation( title.id, var );
 	}
 	
 	public boolean giveTitle( Title title ) throws IOException
@@ -122,18 +122,19 @@ public class Player {
 		return true;
 	}
 	
-	public void resetTitleVariation( Title title ) throws IOException
+	public boolean resetTitleVariation( Title title ) throws IOException
 	{
-		setTitleVariation( null );
+		long collection = Plugin.collectionDatabase.findRow( new SearchCriteria( (short)0, id ), new SearchCriteria( (short)1, title.id ) );
+		if ( collection == -1 ) return false;
+		Plugin.collectionDatabase.updateCell( collection, (short)2, -1L );
+		return true;
 	}
 	
 	public boolean setTitleVariation( Variation variation ) throws IOException
 	{
-		long varId = -1;
-		if ( variation != null ) varId = variation.id;
 		long collection = Plugin.collectionDatabase.findRow( new SearchCriteria( (short)0, id ), new SearchCriteria( (short)1, variation.titleId ) );
 		if ( collection == -1 ) return false;
-		Plugin.collectionDatabase.updateCell( collection, (short)2, varId );
+		Plugin.collectionDatabase.updateCell( collection, (short)2, variation.id );
 		return true;
 	}
 	
