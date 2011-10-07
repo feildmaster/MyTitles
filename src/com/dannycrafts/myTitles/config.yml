@@ -64,21 +64,3 @@ message_title_taken: Title "$title_name$" has been taken from "$player_name$".
 message_title_unregistered: Title "$title_name$" has been unregistered.
 # When a players starts using a title: (display_name, title_name)
 message_title_use: You are now called "$display_name$".
-
-
-##### Database #####
-
-# The way this is configured by default will work just fine.
-# The database type can be set to: "h2" or "mysql".
-# database_host, database_port, database_database are only used for mysql.
-# database_file is only used for h2.
-database_type: h2
-database_table_prefix: 
-
-database_file:
-
-database_host: localhost
-database_port: 3306
-database_username: root
-database_password: 
-database_database: my_titles
