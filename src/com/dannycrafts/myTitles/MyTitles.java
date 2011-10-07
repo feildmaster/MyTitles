@@ -58,6 +58,15 @@ public class MyTitles {
 		return new Title( titleId );
 	}
 	
+	protected Title getIndependentTitle( String titleName ) throws IOException
+	{
+		long titleId = Plugin.titleDatabase.findRow( (short)1, titleName );
+		if ( titleId == -1 )
+			return null;
+
+		return new Title( titleId );
+	}
+	
 	public Title[] getTitles() throws IOException
 	{
 		long[] rows = Plugin.titleDatabase.findRows( new SearchCriteria( (short)0, usagePluginId ) );

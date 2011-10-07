@@ -118,7 +118,7 @@ public class Plugin extends JavaPlugin
 						try
 						{
 							Player _player = mainInterface.getPlayer( player );
-							Title title = mainInterface.getTitle( args[1] );
+							Title title = mainInterface.getIndependentTitle( args[1] );
 							if ( title != null )
 								_player.useTitle( title );
 							else
