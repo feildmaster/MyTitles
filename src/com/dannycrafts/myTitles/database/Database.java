@@ -103,7 +103,7 @@ public class Database
 	{
 		try
 		{
-			for ( long i = 0; ; i++ )
+			for ( long i = startIndex; ; i++ )
 			{
 				seekRow( i );
 				byte[] buffer = new byte[this.header.getHeaderLength()];
