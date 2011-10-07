@@ -37,7 +37,7 @@ public class MyTitles {
 	
 	public Player getPlayer( String playerName ) throws IOException
 	{
-		long playerIndex = plugin.playerDatabase.findRow( (short)0, playerName );
+		long playerIndex = Plugin.playerDatabase.findRow( (short)0, playerName );
 		if ( playerIndex == -1 )
 			return null;
 		
@@ -51,7 +51,7 @@ public class MyTitles {
 	
 	public Title getTitle( String titleName ) throws IOException
 	{		
-		long titleId = plugin.titleDatabase.findRow( new SearchCriteria( (short)0, usagePluginId ), new SearchCriteria( (short)1, titleName ) );
+		long titleId = Plugin.titleDatabase.findRow( new SearchCriteria( (short)0, usagePluginId ), new SearchCriteria( (short)1, titleName ) );
 		if ( titleId == -1 )
 			return null;
 
@@ -60,7 +60,7 @@ public class MyTitles {
 	
 	public Title[] getTitles() throws IOException
 	{
-		long[] rows = plugin.titleDatabase.findRows( new SearchCriteria( (short)0, usagePluginId ) );
+		long[] rows = Plugin.titleDatabase.findRows( new SearchCriteria( (short)0, usagePluginId ) );
 		
 		Title[] titles = new Title[rows.length];
 		
@@ -148,7 +148,7 @@ public class MyTitles {
 	{
 		if ( !isValidName( titleInfo.name ) ) throw new Title.InvalidNameException();
 		
-		return plugin.titleDatabase.addUniqueRow( new SearchCriteria( (short)1, titleInfo.name ),
+		return Plugin.titleDatabase.addUniqueRow( new SearchCriteria( (short)1, titleInfo.name ),
 				new StringCell( usagePluginId ), new StringCell( titleInfo.name ), new StringCell( titleInfo.affixes.prefix ), new StringCell( titleInfo.affixes.suffix )
 		) != -1;
 	}
@@ -165,7 +165,7 @@ public class MyTitles {
 	
 	public boolean unregisterTitle( Title title ) throws IOException
 	{
-		long[] players = plugin.collectionDatabase.findRows( (short)1, title.id );
+		long[] players = Plugin.collectionDatabase.findRows( (short)1, title.id );
 		for ( int i = 0; i < players.length; i++ )
 		{
 			Player player = new Player( plugin, players[i] );
@@ -177,7 +177,7 @@ public class MyTitles {
 			if ( player.takeTitle( title ) == false ) return false;
 		}
 
-		plugin.titleVariationDatabase.removeRows( new SearchCriteria( (short)0, title.id ) );
-		return plugin.titleDatabase.removeRow( title.id );
+		Plugin.titleVariationDatabase.removeRows( new SearchCriteria( (short)0, title.id ) );
+		return Plugin.titleDatabase.removeRow( title.id );
 	}
 }
