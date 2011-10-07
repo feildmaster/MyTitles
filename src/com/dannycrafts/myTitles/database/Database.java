@@ -51,7 +51,7 @@ public class Database
 	{
 		long index = findRow( searchCriteria );
 		if ( index == -1 )
-			addRow( cells );
+			return addRow( cells );
 		
 		return index;
 	}
