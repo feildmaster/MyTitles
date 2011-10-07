@@ -61,9 +61,13 @@ public class StringCell implements Cell
 	
 	public void write( byte[] data )
 	{		
-		int dataLength = Arrays.binarySearch( data, (byte)0 );
-		if ( dataLength < 0 )
-			dataLength = data.length;
+		short dataLength = (short)data.length;
+		for ( short i = 0; i < data.length; i++ )
+			if ( data[i] == 0 )
+			{
+				dataLength = i;
+				break;
+			}
 		
 		char[] chars = new char[dataLength];
 		for ( int i = 0; i < dataLength; i++ )
