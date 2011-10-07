@@ -243,6 +243,7 @@ public class Database
 		{
 			seekRow( index );
 			stream.writeByte( 0 );
+			sockets.add( index );
 		}
 		catch ( EOFException e ) { return false; }
 		
