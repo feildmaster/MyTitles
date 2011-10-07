@@ -94,11 +94,6 @@ public class Database
 		return findRow( new SearchCriteria( (short)cellIndex, new Int64Cell( cellValue ) ) );
 	}
 	
-	public long findRow( SearchCriteria searchCriteria ) throws IOException
-	{
-		return findRow( 0, searchCriteria );
-	}
-	
 	public long findRow( SearchCriteria... searchCriteria ) throws IOException
 	{
 		return findRow( 0, searchCriteria );
