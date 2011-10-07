@@ -51,10 +51,10 @@ public class MyTitles {
 	
 	public Title getTitle( String titleName ) throws IOException
 	{		
-		long titleId = plugin.titleDatabase.findRow( new SearchCriteria( (short)0, usagePluginId ), new SearchCriteria( (short)0, titleName ) );
+		long titleId = plugin.titleDatabase.findRow( new SearchCriteria( (short)0, usagePluginId ), new SearchCriteria( (short)1, titleName ) );
 		if ( titleId == -1 )
 			return null;
-		
+
 		return new Title( titleId );
 	}
 	
