@@ -24,6 +24,7 @@ import com.dannycrafts.myTitles.database.*;
 
 import java.io.*;
 
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.Event.Priority;
@@ -65,6 +66,11 @@ public class Plugin extends JavaPlugin
 	protected String formatParameters( String message, String varName, String value )
 	{
 		return message.replace( "$" + varName + "$", value );
+	}
+	
+	protected static String formatColors( String message )
+	{
+		return ChatColor.stripColor( message.replace( "&", "\u00A7" ) );
 	}
 	
 	public MyTitles getInterface( String usagePluginId )
@@ -362,9 +368,8 @@ public class Plugin extends JavaPlugin
 			String defaultSuffix = config.getString( "default_suffix", "" );
 			Settings.defaultAffixes = new Title.Affixes( defaultPrefix, defaultSuffix );
 
-			Messages.commandPlayerOnly = config.getString( "message_command_player_only", null );
-			Messages.internalError = config.getString( "message_internal_error", null );
-			Messages.invalidTitleName = config.getString( "message_invalid_title_name", null );
+			Messages.commandPlayerOnly = formatColors( config.getString( "message_command_player_only", null ) );
+			Messages.invalidTitleName = formatColors( config.getString( "message_invalid_title_name", null ) );
 			Messages.noPermissions = config.getString( "message_no_permissions", null );
 			Messages.noTitle = config.getString( "message_no_title", null );
 			Messages.noTitles = config.getString( "message_no_titles", null );
@@ -378,7 +383,7 @@ public class Plugin extends JavaPlugin
 			Messages.titleRegistered = config.getString( "message_title_registered", null );
 			Messages.titleTaken = config.getString( "message_title_taken", null );
 			Messages.titleUnregistered = config.getString( "message_title_unregistered", null );
-			Messages.titleUse = config.getString( "message_title_use", null );
+			Messages.titleUse = formatColors( config.getString( "message_title_use", null ) );
 			
 			// Open databases:
 			playerDatabase.open();

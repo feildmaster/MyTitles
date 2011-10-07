@@ -22,6 +22,8 @@ package com.dannycrafts.myTitles;
 
 import java.io.IOException;
 
+import org.bukkit.ChatColor;
+
 import com.dannycrafts.myTitles.database.*;
 
 public class Player {
@@ -53,7 +55,7 @@ public class Player {
 		String displayName = getName();
 		if ( fixes.prefix != null) displayName = fixes.prefix + displayName;
 		if ( fixes.suffix != null ) displayName += fixes.suffix;
-		return displayName;
+		return Plugin.formatColors( displayName );
 	}
 	
 	public String getDisplayName() throws IOException
