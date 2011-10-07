@@ -77,12 +77,15 @@ public class Player {
 	
 	public Title[] getOwnedTitles() throws IOException
 	{
-		long[] titleIds = Plugin.collectionDatabase.findRows( new SearchCriteria( (short)0, id ) );
+		long[] collectionIds = Plugin.collectionDatabase.findRows( new SearchCriteria( (short)0, id ) );
 		
-		Title[] list = new Title[titleIds.length];
+		Title[] list = new Title[collectionIds.length];
 		
-	    for ( int i = 0; i < titleIds.length; i++ )
-			list[i] = new Title( titleIds[i] );
+	    for ( int i = 0; i < list.length; i++ )
+	    {
+	    	Row row = Plugin.collectionDatabase.getRow( collectionIds[i] );
+			list[i] = new Title( row.readInt64( 1 ) );
+	    }
 		
 		return list;
 	}
