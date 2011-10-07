@@ -33,9 +33,9 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.config.Configuration;
 
-public class Plugin extends JavaPlugin {
-	
-	public String usagePluginId = "";
+public class Plugin extends JavaPlugin
+{	
+	public static String pluginName;
 	
 	private PlayerListener playerListener = new PlayerListener( this );
 	protected MyTitles mainInterface = getInterface( "" );
@@ -408,6 +408,8 @@ public class Plugin extends JavaPlugin {
 		
 		try
 		{
+			this.pluginName = this.getDescription().getName();
+			
 			// Load database drivers
 			Class.forName( "com.mysql.jdbc.Driver" );
 			Class.forName( "org.h2.Driver" );
@@ -468,18 +470,18 @@ public class Plugin extends JavaPlugin {
 		print( "v" + this.getDescription().getVersion() );
 	}
 	
-	public void print( String message ) {
+	public static void print( String message ) {
 		
-		System.out.println( "[" + this.getDescription().getName() + "] " + message );
+		System.out.println( "[" + pluginName + "] " + message );
 	}
 	
-	public void printError( Exception e ) {
+	public static void printError( Exception e ) {
 		
 		print( "Unexpected error occurred." );
 		e.printStackTrace();
 	}
 	
-	public void printSqlError( SQLException e ) {
+	public static void printSqlError( SQLException e ) {
 		
 		print( "Unexpected SQL error occurred (" + e.getErrorCode() + ")." );
 		e.printStackTrace();
