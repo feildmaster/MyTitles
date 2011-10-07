@@ -146,11 +146,15 @@ public class Database
 	public long[] findRows( SearchCriteria... searchCriteria ) throws IOException
 	{
 		ArrayList<Long> rowList = new ArrayList<Long>();
-		long row = findRow( searchCriteria );
-		while ( row != -1 )
+		long row = -1;
+		while ( true )
 		{
+			row = findRow( row + 1, searchCriteria );
+			
+			if ( row == -1 )
+				break;
+			
 			rowList.add( row );
-			row = findRow( row, searchCriteria );
 		}
 
 		long[] rows = new long[rowList.size()];
