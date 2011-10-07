@@ -62,7 +62,7 @@ public class Plugin extends JavaPlugin
 		original.close();
 	}
 	
-	protected String format( String message, String varName, String value )
+	protected String formatParameters( String message, String varName, String value )
 	{
 		return message.replace( "$" + varName + "$", value );
 	}
@@ -121,7 +121,7 @@ public class Plugin extends JavaPlugin
 							if ( title != null )
 								_player.useTitle( title );
 							else
-								sendMessage( sender, format( Messages.noTitle, "title_name", args[1] ) );
+								sendMessage( sender, formatParameters( Messages.noTitle, "title_name", args[1] ) );
 						}
 						catch ( Exception e )
 						{
@@ -206,13 +206,13 @@ public class Plugin extends JavaPlugin
 							try
 							{
 								if ( mainInterface.registerTitle( args[1], prefix, postfix ) == false )
-									sendMessage( sender, format( Messages.titleExists, "title_name", args[1] ) );
+									sendMessage( sender, formatParameters( Messages.titleExists, "title_name", args[1] ) );
 								else
-									sendMessage( sender, format( Messages.titleRegistered, "title_name", args[1] ) );
+									sendMessage( sender, formatParameters( Messages.titleRegistered, "title_name", args[1] ) );
 							}
 							catch ( Title.InvalidNameException e)
 							{
-								sendMessage( sender, format( Messages.invalidTitleName, "name", args[1] ) );
+								sendMessage( sender, formatParameters( Messages.invalidTitleName, "name", args[1] ) );
 							}
 							catch ( Exception e )
 							{
@@ -239,9 +239,9 @@ public class Plugin extends JavaPlugin
 						try
 						{
 							if ( mainInterface.unregisterTitle( args[1] ) == false )
-								sendMessage( sender, format( Messages.titleNotExists, "title_name", args[1] ) );
+								sendMessage( sender, formatParameters( Messages.titleNotExists, "title_name", args[1] ) );
 							else
-								sendMessage( sender, format( Messages.titleUnregistered, "title_name", args[1] ) );
+								sendMessage( sender, formatParameters( Messages.titleUnregistered, "title_name", args[1] ) );
 						}
 						catch ( Exception e )
 						{
@@ -265,20 +265,20 @@ public class Plugin extends JavaPlugin
 						{
 							Player _player = mainInterface.getPlayer( args[1] );
 							if ( _player == null )
-								sendMessage( sender, format( Messages.playerNotExists, "player_name", args[1] ) );
+								sendMessage( sender, formatParameters( Messages.playerNotExists, "player_name", args[1] ) );
 							else
 							{
 								Title title = mainInterface.getTitle( args[2] );
 								if ( title == null )
-									sendMessage( sender, format( Messages.titleNotExists, "title_name", args[2] ) );
+									sendMessage( sender, formatParameters( Messages.titleNotExists, "title_name", args[2] ) );
 								else
 								{
 									if ( _player.giveTitle( title ) == false )
-										sendMessage( sender, format( format( Messages.playerOwnsTitle, "title_name", args[2] ), "player_name", args[1] ) );
+										sendMessage( sender, formatParameters( formatParameters( Messages.playerOwnsTitle, "title_name", args[2] ), "player_name", args[1] ) );
 								}
 							}
 								
-							sender.sendMessage( format( format( Messages.titleGiven, "title_name", args[2] ), "player_name", args[1] ) );
+							sender.sendMessage( formatParameters( formatParameters( Messages.titleGiven, "title_name", args[2] ), "player_name", args[1] ) );
 						}
 						catch ( Exception e )
 						{
@@ -302,16 +302,16 @@ public class Plugin extends JavaPlugin
 						{
 							Player _player = mainInterface.getPlayer( args[1] );
 							if ( _player == null )
-								sendMessage( sender, format( Messages.playerNotExists, "player_name", args[1] ) );
+								sendMessage( sender, formatParameters( Messages.playerNotExists, "player_name", args[1] ) );
 							else
 							{
 								Title title = mainInterface.getTitle( args[2] );
 								if ( title == null )
-									sendMessage( sender, format( Messages.titleNotExists, "title_name", args[2] ) );
+									sendMessage( sender, formatParameters( Messages.titleNotExists, "title_name", args[2] ) );
 								else
 								{
 									if ( _player.takeTitle( title ) == false )
-										sendMessage( sender, format( format( Messages.playerNotOwnsTitle, "title_name", args[2] ), "player_name", args[1] ) );
+										sendMessage( sender, formatParameters( formatParameters( Messages.playerNotOwnsTitle, "title_name", args[2] ), "player_name", args[1] ) );
 								}
 							}
 						}
