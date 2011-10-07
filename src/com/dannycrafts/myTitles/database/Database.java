@@ -166,7 +166,7 @@ public class Database
 	
 	public long findSocket() throws IOException
 	{
-		if ( sockets.size() != 0 )
+		if ( sockets.size() > 0 )
 		{
 			long socketIndex = sockets.get( 0 );
 			sockets.remove( 0 );
@@ -191,7 +191,7 @@ public class Database
 			return index;
 		}
 		
-		return -1;
+		return index;
 	}
 	
 	public void flush() throws IOException
