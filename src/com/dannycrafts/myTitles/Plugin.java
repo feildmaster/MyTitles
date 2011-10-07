@@ -408,7 +408,7 @@ public class Plugin extends JavaPlugin
 		
 		try
 		{
-			this.pluginName = this.getDescription().getName();
+			Plugin.pluginName = this.getDescription().getName();
 			
 			// Load database drivers
 			Class.forName( "com.mysql.jdbc.Driver" );
