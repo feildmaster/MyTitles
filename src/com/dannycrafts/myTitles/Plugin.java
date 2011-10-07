@@ -355,19 +355,10 @@ public class Plugin extends JavaPlugin
 		
 		try {
 
-			// Load database drivers
-			Class.forName( "com.mysql.jdbc.Driver" );
-
 			// Load config.yml
 			Configuration config = new Configuration( new File( this.getDataFolder() + "/config.yml" ) );
 			config.load();
 			
-			// Open databases:
-			playerDatabase.open();
-			titleDatabase.open();
-			collectionDatabase.open();
-			titleVariationDatabase.open();
-
 			String defaultPrefix = config.getString( "default_prefix", "" );
 			String defaultSuffix = config.getString( "default_suffix", "" );
 			Settings.defaultAffixes = new Title.Affixes( defaultPrefix, defaultSuffix );
@@ -390,6 +381,12 @@ public class Plugin extends JavaPlugin
 			Messages.titleUnregistered = config.getString( "message_title_unregistered", null );
 			Messages.titleUse = config.getString( "message_title_use", null );
 			
+			// Open databases:
+			playerDatabase.open();
+			titleDatabase.open();
+			collectionDatabase.open();
+			titleVariationDatabase.open();
+			
 			// Register events:
 			PluginManager pluginManager = this.getServer().getPluginManager();
 			pluginManager.registerEvent( Type.PLAYER_JOIN, playerListener, Priority.Normal, this );
@@ -409,10 +406,6 @@ public class Plugin extends JavaPlugin
 		try
 		{
 			Plugin.pluginName = this.getDescription().getName();
-			
-			// Load database drivers
-			Class.forName( "com.mysql.jdbc.Driver" );
-			Class.forName( "org.h2.Driver" );
 			
 			// Make sure that folders exist:
 			if ( !getDataFolder().exists() )
@@ -478,12 +471,6 @@ public class Plugin extends JavaPlugin
 	public static void printError( Exception e ) {
 		
 		print( "Unexpected error occurred." );
-		e.printStackTrace();
-	}
-	
-	public static void printSqlError( SQLException e ) {
-		
-		print( "Unexpected SQL error occurred (" + e.getErrorCode() + ")." );
 		e.printStackTrace();
 	}
 	
