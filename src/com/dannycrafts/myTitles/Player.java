@@ -60,12 +60,12 @@ public class Player {
 	{
 		Row row = Plugin.playerDatabase.getRow( id );
 		long titleId = row.readInt64( 1 );
-		if ( titleId <= 0 )
+		if ( titleId < 0 )
 			return getDisplayName( Plugin.Settings.defaultAffixes );
 		
 		long rowIndex = Plugin.collectionDatabase.findRow( new SearchCriteria( (short)0, new Int64Cell( id ) ), new SearchCriteria( (short)0, new Int64Cell( titleId ) ) );
 		if ( rowIndex != -1 )
-			return getDisplayName( new Title( titleId ) );
+		return getDisplayName( new Title( titleId ) );
 		return getDisplayName( Plugin.Settings.defaultAffixes );
 	}
 	
