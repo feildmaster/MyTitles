@@ -20,8 +20,9 @@
 
 package com.dannycrafts.myTitles;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.io.IOException;
+
+import com.dannycrafts.myTitles.database.*;
 
 public class MyTitles {
     
@@ -34,43 +35,37 @@ public class MyTitles {
 		this.usagePluginId = usagePluginId;
 	}
 	
-	public Player getPlayer( String playerName ) throws SQLException, Player.DoesntExistException
+	public Player getPlayer( String playerName ) throws IOException
 	{
-		ResultSet result = Database.query( "SELECT id FROM " + Database.formatTableName( "players" ) + " WHERE name = '" + playerName + "';" );
-		if ( result.first() == false )
-			throw new Player.DoesntExistException();
+		long playerIndex = plugin.playerDatabase.findRow( (short)0, playerName );
+		if ( playerIndex == -1 )
+			return null;
 		
-		return new Player( plugin, result.getLong( "id" ) );
+		return new Player( plugin, playerIndex );
 	}
 	
-	public Player getPlayer( org.bukkit.entity.Player player ) throws SQLException, Player.DoesntExistException
+	public Player getPlayer( org.bukkit.entity.Player player ) throws IOException
 	{
 		return getPlayer( player.getName() );
 	}
 	
-	public Title getTitle( String titleName ) throws SQLException, Title.DoesntExistException
-	{
-		ResultSet result = Database.query( "SELECT id FROM " + Database.formatTableName( "titles" ) + " WHERE name = '" + titleName + "' AND plugin_id = '" + usagePluginId + "';" );
-		if ( result.first() == false )
-			throw new Title.DoesntExistException();
+	public Title getTitle( String titleName ) throws IOException
+	{		
+		long titleId = plugin.titleDatabase.findRow( new SearchCriteria( (short)0, usagePluginId ), new SearchCriteria( (short)0, titleName ) );
+		if ( titleId == -1 )
+			return null;
 		
-		return new Title( result.getLong( "id" ) );
+		return new Title( titleId );
 	}
 	
-	public Title[] getTitles() throws SQLException
+	public Title[] getTitles() throws IOException
 	{
-		ResultSet result = Database.query( "SELECT id FROM " + Database.formatTableName( "titles" ) + " WHERE plugin_id = '" + usagePluginId + "';" );
-		result.last();
-		Title[] titles = new Title[result.getRow()];
-		result.beforeFirst();
+		long[] rows = plugin.titleDatabase.findRows( new SearchCriteria( (short)0, usagePluginId ) );
 		
-		int i = 0;
-		while ( result.next() )
-		{
-			titles[i] = new Title( result.getLong( "id" ) );
-			
-			i++;
-		}
+		Title[] titles = new Title[rows.length];
+		
+		for ( int i = 0; i < rows.length; i++ )
+			titles[i] = new Title( rows[i] );
 		
 		return titles;
 	}
@@ -92,7 +87,7 @@ public class MyTitles {
 		return true;
 	}
 	
-	public void putTitles( Title.Info[] titles ) throws SQLException, Exception
+	public void putTitles( Title.Info[] titles ) throws Exception
 	{
 		Title[] registeredTitles = getTitles();
 		
@@ -149,46 +144,40 @@ public class MyTitles {
 		}
 	}
 	
-	public void registerTitle( Title.Info titleInfo ) throws Title.AlreadyExistsException, SQLException, Title.InvalidNameException
+	public boolean registerTitle( Title.Info titleInfo ) throws IOException, Title.InvalidNameException
 	{
-		try
-		{
-			if ( !isValidName( titleInfo.name ) ) throw new Title.InvalidNameException();
-			Database.update( "INSERT INTO " + Database.formatTableName( "titles" ) + " ( name, plugin_id, prefix, suffix ) VALUES ( '" + titleInfo.name + "', '" + usagePluginId + "', " + Database.formatString( titleInfo.affixes.prefix ) + ", " + Database.formatString( titleInfo.affixes.suffix ) + " );" );
-		}
-		catch ( SQLException e )
-		{
-			if ( e.getErrorCode() == Database.Codes.uniqueDuplicate ) // Duplicate error
-				throw new Title.AlreadyExistsException();
-			throw e;
-		}
-	}
-	
-	public void registerTitle( String name, String prefix, String suffix ) throws Title.AlreadyExistsException, SQLException, Title.InvalidNameException
-	{
-		registerTitle( new Title.Info( name, prefix, suffix ) );
-	}
-	
-	public void unregisterTitle( String name ) throws SQLException, Title.DoesntExistException {
+		if ( !isValidName( titleInfo.name ) ) throw new Title.InvalidNameException();
 		
-		unregisterTitle( getTitle( name ) );
+		return plugin.titleDatabase.addUniqueRow( new SearchCriteria( (short)1, titleInfo.name ),
+				new StringCell( usagePluginId ), new StringCell( titleInfo.name ), new StringCell( titleInfo.affixes.prefix ), new StringCell( titleInfo.affixes.suffix )
+		) != -1;
+	}
+		
+	public boolean registerTitle( String name, String prefix, String suffix ) throws IOException, Title.InvalidNameException
+	{
+		return registerTitle( new Title.Info( name, prefix, suffix ) );
 	}
 	
-	public void unregisterTitle( Title title ) throws SQLException
+	public boolean unregisterTitle( String name ) throws IOException
+	{		
+		return unregisterTitle( getTitle( name ) );
+	}
+	
+	public boolean unregisterTitle( Title title ) throws IOException
 	{
-		ResultSet result = Database.query( "SELECT player_id FROM " + Database.formatTableName( "collections" ) + " WHERE title_id = " + title.id + ";" );
-		while ( result.next() )
+		long[] players = plugin.collectionDatabase.findRows( (short)1, title.id );
+		for ( int i = 0; i < players.length; i++ )
 		{
-		
-			Player player = new Player( plugin, result.getLong( "player_id" ) );
+			Player player = new Player( plugin, players[i] );
 				
 			org.bukkit.entity.Player onlinePlayer = plugin.getServer().getPlayer( player.getName() );
 			if ( onlinePlayer != null )
 				onlinePlayer.sendMessage( "You lost title \"" + title.getName() + "\"." );
+			
+			if ( player.takeTitle( title ) == false ) return false;
 		}
 
-		Database.update( "DELETE FROM " + Database.formatTableName( "title_variations" ) + " WHERE title_id = " + title.id + ";" );
-		Database.update( "DELETE FROM " + Database.formatTableName( "collections" ) + " WHERE title_id = " + title.id + ";" );
-		Database.update( "DELETE FROM " + Database.formatTableName( "titles" ) + " WHERE id = " + title.id + ";" );
+		plugin.titleVariationDatabase.removeRows( new SearchCriteria( (short)0, title.id ) );
+		return plugin.titleDatabase.removeRow( title.id );
 	}
 }

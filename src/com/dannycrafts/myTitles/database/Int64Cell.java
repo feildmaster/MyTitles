@@ -1,6 +1,6 @@
 package com.dannycrafts.myTitles.database;
 
-public class Int64Cell extends Cell
+public class Int64Cell implements Cell
 {
 	long data;
 	
@@ -14,9 +14,19 @@ public class Int64Cell extends Cell
 		this.data = data;
 	}
 	
+	public Int64Cell( Int64Cell other )
+	{
+		this.data = other.data;
+	}
+	
 	public long getInt()
 	{
 		return data;
+	}
+	
+	public boolean matches( byte[] data )
+	{
+		return fromBytes( data ) == this.data;
 	}
 	
 	public byte[] read()
@@ -35,13 +45,18 @@ public class Int64Cell extends Cell
 	
 	public void write( byte[] data )
 	{
-		this.data = (data[0] & 0xFF) |
-					((data[1] & 0xFF) << 8) |
-					((data[2] & 0xFF) << 16) |
-					((data[3] & 0xFF) << 24) |
-					((data[4] & 0xFF) << 32) |
-					((data[5] & 0xFF) << 40) |
-					((data[6] & 0xFF) << 48) |
-					((data[7] & 0xFF) << 56);
+		this.data = fromBytes( data );
+	}
+	
+	private int fromBytes( byte[] data )
+	{
+		return	(data[0] & 0xFF) |
+				((data[1] & 0xFF) << 8) |
+				((data[2] & 0xFF) << 16) |
+				((data[3] & 0xFF) << 24) |
+				((data[4] & 0xFF) << 32) |
+				((data[5] & 0xFF) << 40) |
+				((data[6] & 0xFF) << 48) |
+				((data[7] & 0xFF) << 56);
 	}
 }

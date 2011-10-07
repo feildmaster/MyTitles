@@ -20,8 +20,9 @@
 
 package com.dannycrafts.myTitles;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.io.IOException;
+
+import com.dannycrafts.myTitles.database.*;
 
 public class Player {
 
@@ -34,11 +35,11 @@ public class Player {
 		this.plugin = plugin;
 	}
 	
-	public String getDisplayName( Title title ) throws SQLException
+	public String getDisplayName( Title title ) throws IOException
 	{
 		Variation var = getTitleVariation( title );
 		
-		if ( !var.isVanilla() )
+		if ( var != null )
 		{
 			Variation.Affixes affixes = var.getAffixes();
 			return getDisplayName( new Title.Affixes( affixes.prefix, affixes.suffix ) );
@@ -47,7 +48,7 @@ public class Player {
 		return getDisplayName( title.getAffixes() );
 	}
 	
-	public String getDisplayName( Title.Affixes fixes ) throws SQLException
+	public String getDisplayName( Title.Affixes fixes ) throws IOException
 	{
 		String displayName = getName();
 		if ( fixes.prefix != null) displayName = fixes.prefix + displayName;
@@ -55,92 +56,97 @@ public class Player {
 		return displayName;
 	}
 	
-	public String getDisplayName() throws SQLException
+	public String getDisplayName() throws IOException
 	{
-		ResultSet result = Database.query( "SELECT title_id FROM " + Database.formatTableName( "players" ) + " WHERE id = " + id + ";" );
-		result.first();
-		long titleId = result.getInt( "title_id" );
-		if ( titleId == 0 )
+		Row row = Plugin.playerDatabase.getRow( id );
+		long titleId = row.readInt64( 1 );
+		if ( titleId <= 0 )
 			return getDisplayName( Plugin.Settings.defaultAffixes );
 		
-		result = Database.query( "SELECT id FROM " + Database.formatTableName( "collections" ) + " WHERE player_id = " + id + " AND title_id = " + titleId + ";" );
-		if ( result.first() )
+		long rowIndex = Plugin.collectionDatabase.findRow( new SearchCriteria( (short)0, new Int64Cell( id ) ), new SearchCriteria( (short)0, new Int64Cell( titleId ) ) );
+		if ( rowIndex != -1 )
 			return getDisplayName( new Title( titleId ) );
 		return getDisplayName( Plugin.Settings.defaultAffixes );
 	}
 	
-	public String getName() throws SQLException
+	public String getName() throws IOException
 	{
-		ResultSet result = Database.query( "SELECT name FROM " + Database.formatTableName( "players" ) + " WHERE id = " + id + ";" );
-		result.next();
-		return result.getString( "name" );
+		Row row = Plugin.playerDatabase.getRow( id );
+		return row.readString( 0 );
 	}
 	
-	public Title[] getOwnedTitles() throws SQLException
+	public Title[] getOwnedTitles() throws IOException
 	{
-		ResultSet result = Database.query( "SELECT id FROM " + Database.formatTableName( "titles" ) + " WHERE id IN ( SELECT title_id FROM " + Database.formatTableName( "collections" ) + " WHERE player_id = " + id + " );" );
-		result.last();
-		Title[] list = new Title[result.getRow()];
+		long[] titleIds = Plugin.collectionDatabase.findRows( new SearchCriteria( (short)0, id ) );
 		
-		result.beforeFirst();
-		int i = 0;
-		while ( result.next() )
-		{
-			list[i] = new Title( result.getLong( "id" ) );
-			i++;
-		}
+		Title[] list = new Title[titleIds.length];
+		
+	    for ( int i = 0; i < titleIds.length; i++ )
+			list[i] = new Title( titleIds[i] );
 		
 		return list;
 	}
 	
-	public Variation getTitleVariation( Title title ) throws SQLException
+	protected void resetTitle() throws IOException
 	{
-		ResultSet result = Database.query( "SELECT title_variation_id FROM " + Database.formatTableName( "collections" ) + " WHERE player_id = " + id + " AND title_id = " + title.id + ";" );
-		if ( result.first() == false ) return null;
-		return new Variation( title, result.getLong( "title_variation_id" ) );
+		Plugin.playerDatabase.updateCell( id, (short)1, -1L );
 	}
 	
-	public void giveTitle( Title title ) throws SQLException, Player.AlreadyOwnsTitleException
+	protected void useTitle( Title title ) throws IOException
 	{
-		try
-		{
-			Database.update( "INSERT INTO " + Database.formatTableName( "collections" ) + " ( player_id, title_id ) VALUES ( " + id + ", " + title.id + " );" );
+		Plugin.playerDatabase.updateCell( id, (short)1, title.id );
+	}
+	
+	public Variation getTitleVariation( Title title ) throws IOException
+	{
+		long collection = Plugin.collectionDatabase.findRow( new SearchCriteria( (short)0, id ), new SearchCriteria( (short)1, title.id ) );
+		if ( collection == -1 ) return null;
+		
+		Row row = Plugin.collectionDatabase.getRow( collection );
+		return new Variation( title.id, row.readInt64( 2 ) );
+	}
+	
+	public boolean giveTitle( Title title ) throws IOException
+	{
+		long row =  Plugin.collectionDatabase.findRow( new SearchCriteria( (short)0, id ), new SearchCriteria( (short)1, title.id ) );
+		if ( row != -1 ) return false;
+		Plugin.collectionDatabase.addRow( new Int64Cell( id ), new Int64Cell( title.id ), new Int64Cell( -1 ) );
 
-			org.bukkit.entity.Player onlinePlayer = plugin.getServer().getPlayer( getName() );
-			if ( onlinePlayer != null )
-				onlinePlayer.sendMessage( "You acquired title \"" + title.getName() + "\", use \"/mytitles\" to view the titles that you own." );
-		}
-		catch ( SQLException e )
-		{
-			if ( e.getErrorCode() == Database.Codes.uniqueDuplicate )
-				throw new Player.AlreadyOwnsTitleException();
-			throw e;
-		}
+		org.bukkit.entity.Player onlinePlayer = plugin.getServer().getPlayer( getName() );
+		if ( onlinePlayer != null )
+			onlinePlayer.sendMessage( "You acquired title \"" + title.getName() + "\", use \"/mytitles\" to view the titles that you own." );
+	
+		return true;
 	}
 	
-	public void resetTitleVariation( Title title ) throws SQLException
+	public void resetTitleVariation( Title title ) throws IOException
 	{
-		Database.update( "UPDATE " + Database.formatTableName( "collections" ) + " SET title_variation_id = NULL WHERE player_id = " + id + " AND title_id = " + title.id + ";" );
+		setTitleVariation( null );
 	}
 	
-	public void setTitleVariation( Variation variation ) throws SQLException
+	public boolean setTitleVariation( Variation variation ) throws IOException
 	{
-		Database.update( "UPDATE " + Database.formatTableName( "collections" ) + " SET title_variation_id = " + variation.id + " WHERE player_id = " + id + " AND title_id = " + variation.title.id + ";" );
+		long varId = -1;
+		if ( variation != null ) varId = variation.id;
+		long collection = Plugin.collectionDatabase.findRow( new SearchCriteria( (short)0, id ), new SearchCriteria( (short)1, variation.titleId ) );
+		if ( collection == -1 ) return false;
+		Plugin.collectionDatabase.updateCell( collection, (short)2, varId );
+		return true;
 	}
 	
-	public void takeTitle( Title title ) throws SQLException, Player.DoesntOwnTitleException
+	public boolean takeTitle( Title title ) throws IOException
 	{
 		String titleName = title.getName();
 		
-		int affected = Database.update( "DELETE FROM " + Database.formatTableName( "collections" ) + " WHERE player_id = " + id + " AND title_id = " + title.id + ";" );
-		if ( affected == 0 ) throw new DoesntOwnTitleException();
+		long collection = Plugin.collectionDatabase.findRow( new SearchCriteria( (short)0, id ), new SearchCriteria( (short)1, title.id ) );
+		if ( collection == -1 ) return false;
+		
+		Plugin.collectionDatabase.removeRow( collection );
 		
 		org.bukkit.entity.Player onlinePlayer = plugin.getServer().getPlayer( getName() );
 		if ( onlinePlayer != null )
 			onlinePlayer.sendMessage( "You lost title \"" + titleName + "\"." );
+		
+		return true;
 	}
-
-	public static class DoesntExistException extends Exception {};
-	public static class AlreadyOwnsTitleException extends Exception {};
-	public static class DoesntOwnTitleException extends Exception {};
 }

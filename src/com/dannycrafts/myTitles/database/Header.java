@@ -52,12 +52,12 @@ public class Header
 		addLength( (short)8 );
 	}
 	
-	protected int getCellOffset( int index )
+	protected short getCellOffset( short index )
 	{
 		return cellOffsets.get( index );
 	}
 	
-	protected short getCellLength( int index )
+	protected short getCellLength( short index )
 	{
 		return cellLengths.get( index );
 	}

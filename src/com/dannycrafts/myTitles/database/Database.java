@@ -2,12 +2,8 @@ package com.dannycrafts.myTitles.database;
 
 import java.io.EOFException;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.io.SyncFailedException;
 import java.util.ArrayList;
 
 public class Database
@@ -38,17 +34,26 @@ public class Database
 		seekRow( socketIndex );
 		
 		stream.writeByte( 1 ); // Flag indicating the row exists, if set to 0 it is flagged as empty.
-		int i = 0;
+		short i = 0;
 		for ( Cell cell : cells )
 		{
-			byte[] cellBufer = cell.read();
+			byte[] cellBuffer = cell.read();
 			byte[] buffer = new byte[header.getCellLength( i )];
-			System.arraycopy( cellBufer, 0, buffer, 0, cellBufer.length );
+			System.arraycopy( cellBuffer, 0, buffer, 0, cellBuffer.length );
 			stream.write( buffer );
 			i++;
 		}
 		
 		return socketIndex;
+	}
+	
+	public long addUniqueRow( SearchCriteria searchCriteria, Cell... cells ) throws IOException
+	{
+		long index = findRow( searchCriteria );
+		if ( index == -1 )
+			addRow( cells );
+		
+		return index;
 	}
 	
 	public void close() throws IOException
@@ -67,6 +72,96 @@ public class Database
 		close();
 		
 		this.dataOffset = 2;
+	}
+	
+	public long findRow( int cellIndex, Cell cellValue ) throws IOException
+	{
+		return findRow( new SearchCriteria( (short)cellIndex, cellValue ) );
+	}
+	
+	public long findRow( int cellIndex, String cellValue ) throws IOException
+	{
+		return findRow( new SearchCriteria( (short)cellIndex, new StringCell( cellValue ) ) );
+	}
+	
+	public long findRow( int cellIndex, int cellValue ) throws IOException
+	{
+		return findRow( new SearchCriteria( (short)cellIndex, new Int32Cell( cellValue ) ) );
+	}
+	
+	public long findRow( int cellIndex, long cellValue ) throws IOException
+	{
+		return findRow( new SearchCriteria( (short)cellIndex, new Int64Cell( cellValue ) ) );
+	}
+	
+	public long findRow( SearchCriteria searchCriteria ) throws IOException
+	{
+		return findRow( 0, searchCriteria );
+	}
+	
+	public long findRow( SearchCriteria... searchCriteria ) throws IOException
+	{
+		return findRow( 0, searchCriteria );
+	}
+	
+	public long findRow( long startIndex, SearchCriteria... searchCriteria ) throws IOException
+	{
+		try
+		{
+			for ( long i = 0; ; i++ )
+			{
+				seekRow( i );
+				byte[] buffer = new byte[this.header.getHeaderLength()];
+				
+				if ( stream.readBoolean() == true ) // If row exists
+				{
+					boolean matches = true;
+					for ( short j = 0; j < searchCriteria.length; j++ )
+					{
+						seekCell( i, searchCriteria[j].cellIndex );
+						stream.read( buffer, 0, this.header.getCellLength( searchCriteria[j].cellIndex ) );
+						
+						if ( !searchCriteria[j].cellData.matches( buffer ) )
+						{
+							matches = false;
+							break;
+						}
+					}
+					
+					if ( matches ) return i;
+				}
+			}
+		}
+		catch (EOFException e) {}
+		
+		return -1;
+	}
+	
+	public long[] findRows( short cellIndex, long cellValue ) throws IOException
+	{
+		return findRows( cellIndex, new Int64Cell( cellValue ) );
+	}
+	
+	public long[] findRows( short cellIndex, Cell cellValue ) throws IOException
+	{
+		return findRows( new SearchCriteria( cellIndex, cellValue ) );
+	}
+	
+	public long[] findRows( SearchCriteria... searchCriteria ) throws IOException
+	{
+		ArrayList<Long> rowList = new ArrayList<Long>();
+		long row = findRow( searchCriteria );
+		while ( row != -1 )
+		{
+			rowList.add( row );
+			row = findRow( row, searchCriteria );
+		}
+
+		long[] rows = new long[rowList.size()];
+		for ( int i = 0; i < rowList.size(); i++ )
+			rows[i] = rowList.get( i );
+		
+		return rows;
 	}
 	
 	public long findSocket() throws IOException
@@ -104,7 +199,7 @@ public class Database
 		stream.getFD().sync();
 	}
 	
-	public Row getRow( long index ) throws IOException, Database.RowDoesntExistException
+	public Row getRow( long index ) throws IOException
 	{
 		boolean exists = false;
 		try
@@ -112,8 +207,8 @@ public class Database
 			seekRow( index );
 			exists = stream.readBoolean();
 		}
-		catch ( EOFException e ) { throw new Database.RowDoesntExistException(); }
-		if ( !exists ) throw new Database.RowDoesntExistException();
+		catch ( EOFException e ) { return null; }
+		if ( !exists ) return null;
 		
 		byte[] buffer = new byte[header.getHeaderLength()];
 		stream.read( buffer );
@@ -142,19 +237,94 @@ public class Database
 		this.dataOffset = 2;
 	}
 	
+	public boolean removeRow( long index ) throws IOException
+	{
+		try
+		{
+			seekRow( index );
+			stream.writeByte( 0 );
+		}
+		catch ( EOFException e ) { return false; }
+		
+		return true;
+	}
+	
+	public int removeRows( SearchCriteria searchCriteria ) throws IOException
+	{
+		long row = findRow( searchCriteria );
+		int removed = 0;
+		while ( row != -1 )
+		{
+			removeRow( row );
+			removed++;
+			
+			row = findRow( row, searchCriteria );
+		}
+
+		return removed;
+	}
+	
+	private void seekCell( long rowIndex, short cellIndex ) throws IOException
+	{
+		stream.seek( dataOffset + rowIndex * ( header.getHeaderLength() + 1 ) + 1 + header.getCellOffset( cellIndex ) );
+	}
+	
 	private void seekRow( long index ) throws IOException
 	{
 		stream.seek( dataOffset + index * ( header.getHeaderLength() + 1 ) );
 	}
 	
-	public void removeRow( long index ) throws IOException
+	public boolean updateCell( long rowIndex, short cellIndex, int cellData ) throws IOException
 	{
-		seekRow( index );
-		stream.writeByte( 0 );
+		return updateCell( rowIndex, cellIndex, new Int32Cell( cellData ) );
 	}
 	
-
-	public static class RowDoesntExistException extends Exception {}
+	public boolean updateCell( long rowIndex, short cellIndex, long cellData ) throws IOException
+	{
+		return updateCell( rowIndex, cellIndex, new Int64Cell( cellData ) );
+	}
+	
+	public boolean updateCell( long rowIndex, short cellIndex, String cellData ) throws IOException
+	{
+		return updateCell( rowIndex, cellIndex, new StringCell( cellData ) );
+	}
+	
+	public boolean updateCell( long rowIndex, short cellIndex, Cell cell ) throws IOException
+	{
+		try
+		{
+			seekRow( rowIndex );
+			if ( stream.readBoolean() == false ) return false;
+			stream.skipBytes( header.getCellOffset( cellIndex ) );
+			stream.write( cell.read() );
+		}
+		catch ( EOFException e ) { return false; }
+		
+		return true;
+	}
+	
+	public boolean updateRow( long index, Cell... cells ) throws IOException
+	{
+		try
+		{
+			seekRow( index );
+			if ( stream.readBoolean() == false ) return false;
+		}
+		catch ( EOFException e ) { return false; }
+		
+		short i = 0;
+		for ( Cell cell : cells )
+		{
+			byte[] cellBuffer = cell.read();
+			byte[] buffer = new byte[header.getCellLength( i )];
+			System.arraycopy( cellBuffer, 0, buffer, 0, cellBuffer.length );
+			stream.write( buffer );
+			
+			i++;
+		}
+		
+		return true;
+	}
 
 	public static class DifferentVersionException extends Exception
 	{

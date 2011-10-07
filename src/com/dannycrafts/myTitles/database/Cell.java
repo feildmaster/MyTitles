@@ -1,13 +1,11 @@
 package com.dannycrafts.myTitles.database;
 
-public class Cell
+public interface Cell
 {
-	public Cell() {}
 	
-	protected byte[] read()
-	{
-		return new byte[0];
-	}
+	public boolean matches( byte[] data );
 	
-	protected void write( byte[] data ) {}
+	public byte[] read();
+	
+	public void write( byte[] data );
 }

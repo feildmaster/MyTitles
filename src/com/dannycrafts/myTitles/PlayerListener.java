@@ -20,12 +20,13 @@
 
 package com.dannycrafts.myTitles;
 
+import java.io.IOException;
 import java.sql.SQLException;
 
 import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 
-import com.dannycrafts.myTitles.Player.DoesntExistException;
+import com.dannycrafts.myTitles.database.*;
 
 public class PlayerListener extends org.bukkit.event.player.PlayerListener {
 
@@ -40,26 +41,13 @@ public class PlayerListener extends org.bukkit.event.player.PlayerListener {
 		
 		try
 		{
-			Database.update( "INSERT INTO " + Database.formatTableName( "players" ) + " ( name ) VALUES ( '" + event.getPlayer().getName() + "' );" );
-			try
-			{
-				event.setJoinMessage( plugin.mainInterface.getPlayer( event.getPlayer() ).getDisplayName() + " joined the game." );
-			}
-			catch ( DoesntExistException e )
-			{
-				plugin.printError( e );
-			}
-			catch ( SQLException e )
-			{
-				plugin.printSqlError( e );
-			}
+			Plugin.playerDatabase.addUniqueRow( new SearchCriteria( (short)0, event.getPlayer().getName() ), new StringCell( event.getPlayer().getName() ), new Int64Cell( -1 ) );
+			
+			event.setJoinMessage( plugin.mainInterface.getPlayer( event.getPlayer() ).getDisplayName() + " joined the game." );
 		}
-		catch ( SQLException e )
+		catch ( IOException e )
 		{
-			if ( e.getErrorCode() != 1062 )
-			{
-				plugin.printSqlError( e );
-			}
+			plugin.printError( e );
 		}
 	}
 	
@@ -70,13 +58,9 @@ public class PlayerListener extends org.bukkit.event.player.PlayerListener {
 			Player player = plugin.mainInterface.getPlayer( event.getPlayer() );
 			event.getPlayer().setDisplayName( player.getDisplayName() );
 		}
-		catch ( Player.DoesntExistException e )
+		catch ( Exception e )
 		{
 			plugin.printError( e );
-		}
-		catch ( SQLException e )
-		{
-			plugin.printSqlError( e );
 		}
 	}
 	
@@ -86,13 +70,9 @@ public class PlayerListener extends org.bukkit.event.player.PlayerListener {
 		{
 			event.setJoinMessage( plugin.mainInterface.getPlayer( event.getPlayer() ).getDisplayName() + " left the game." );
 		}
-		catch ( DoesntExistException e )
+		catch ( Exception e )
 		{
 			plugin.printError( e );
-		}
-		catch ( SQLException e )
-		{
-			plugin.printSqlError( e );
 		}
 	}
 }

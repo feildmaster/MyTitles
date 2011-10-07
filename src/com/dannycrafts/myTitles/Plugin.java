@@ -33,8 +33,7 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.config.Configuration;
 
-import com.dannycrafts.myTitles.Title.InvalidNameException;
-import com.dannycrafts.myTitles.database.StringCell;
+import com.dannycrafts.myTitles.database.*;
 
 public class Plugin extends JavaPlugin {
 	
@@ -43,10 +42,10 @@ public class Plugin extends JavaPlugin {
 	private PlayerListener playerListener = new PlayerListener( this );
 	protected MyTitles mainInterface = getInterface( "" );
 
-	protected com.dannycrafts.myTitles.database.Database playerDatabase;
-	protected com.dannycrafts.myTitles.database.Database titleDatabase;
-	protected com.dannycrafts.myTitles.database.Database collectionDatabase;
-	protected com.dannycrafts.myTitles.database.Database titleVariationDatabase;
+	protected static com.dannycrafts.myTitles.database.Database playerDatabase;
+	protected static com.dannycrafts.myTitles.database.Database titleDatabase;
+	protected static com.dannycrafts.myTitles.database.Database collectionDatabase;
+	protected static com.dannycrafts.myTitles.database.Database titleVariationDatabase;
 	
 	protected void copyFile( InputStream original, OutputStream copy ) throws IOException, FileNotFoundException
 	{		
@@ -100,15 +99,9 @@ public class Plugin extends JavaPlugin {
 					else
 						sendMessage( sender, Messages.noTitles );
 				}
-				catch ( Player.DoesntExistException e )
+				catch ( Exception e )
 				{
 					printError( e );
-					sendMessage( sender, Messages.internalError );
-				}
-				catch ( SQLException e )
-				{
-					printSqlError( e );
-					sendMessage( sender, Messages.internalError );
 				}
 			}
 			else if ( player == null )
@@ -126,20 +119,16 @@ public class Plugin extends JavaPlugin {
 					{
 						try
 						{
-							int affected = Database.update( "UPDATE " + Database.formatTableName( "players" ) + " SET title_id = ( SELECT id FROM " + Database.formatTableName( "titles" ) + " WHERE name = '" + args[1] + "' ) WHERE name = '" + player.getName() + "';" );
-							if ( affected == 0 )
-								sendMessage( sender, format( Messages.noTitle, "title_name", args[1] ) );
+							Player _player = mainInterface.getPlayer( player );
+							Title title = mainInterface.getTitle( args[1] );
+							if ( title != null )
+								_player.useTitle( title );
 							else
-								sendMessage( sender, format( format( Messages.titleUse, "display_name",  mainInterface.getPlayer( player ).getDisplayName() ), "title_name", args[1] ) );
+								sendMessage( sender, format( Messages.noTitle, "title_name", args[1] ) );
 						}
-						catch ( Player.DoesntExistException e )
+						catch ( Exception e )
 						{
 							printError( e );
-						}
-						catch ( SQLException e )
-						{
-							printSqlError( e );
-							sendMessage( sender, Messages.internalError );
 						}
 					}
 					else
@@ -157,13 +146,8 @@ public class Plugin extends JavaPlugin {
 				{
 					try
 					{
-						Database.update( "UPDATE " + Database.formatTableName( "players" ) + " SET title_id = 0 WHERE name = '" + player.getName() + "';" );
-						player.sendMessage( format( Messages.titleClear, "name", mainInterface.getPlayer( player.getName() ).getDisplayName() ) );
-					}
-					catch ( SQLException e )
-					{
-						printSqlError( e );
-						sendMessage( sender, Messages.internalError );
+						Player _player = mainInterface.getPlayer( player );
+						_player.resetTitle();
 					}
 					catch ( Exception e )
 					{
@@ -191,23 +175,15 @@ public class Plugin extends JavaPlugin {
 							{
 								Title selectedTitle = titles[selectNr - 1];
 								
-								int affected = Database.update( "UPDATE " + Database.formatTableName( "players" ) + " SET title_id = " + selectedTitle.id + " WHERE name = '" + player.getName() + "';" );
-								if ( affected == 0 )
-									sendMessage( sender, format( Messages.noTitle, "title_name", selectedTitle.getName() ) );
-								else
-									sendMessage( sender, format( format( Messages.titleUse, "display_name",  mainInterface.getPlayer( player ).getDisplayName() ), "title_name", selectedTitle.getName() ) );
+								Player _player = mainInterface.getPlayer( player );
+								_player.useTitle( selectedTitle );
 							}
 							else
 								player.sendMessage( "Number is out of range." );
 						}
-						catch ( Player.DoesntExistException e )
+						catch ( Exception e )
 						{
 							printError( e );
-						}
-						catch ( SQLException e )
-						{
-							printSqlError( e );
-							sendMessage( sender, Messages.internalError );
 						}
 					}
 					else
@@ -232,20 +208,18 @@ public class Plugin extends JavaPlugin {
 								
 							try
 							{
-								mainInterface.registerTitle( args[1], prefix, postfix );
-								sendMessage( sender, format( Messages.titleRegistered, "title_name", args[1] ) );
+								if ( mainInterface.registerTitle( args[1], prefix, postfix ) == false )
+									sendMessage( sender, format( Messages.titleExists, "title_name", args[1] ) );
+								else
+									sendMessage( sender, format( Messages.titleRegistered, "title_name", args[1] ) );
 							}
-							catch ( Title.AlreadyExistsException e )
-							{
-								sendMessage( sender, format( Messages.titleExists, "title_name", args[1] ) );
-							}
-							catch (InvalidNameException e)
+							catch ( Title.InvalidNameException e)
 							{
 								sendMessage( sender, format( Messages.invalidTitleName, "name", args[1] ) );
 							}
-							catch ( SQLException e )
+							catch ( Exception e )
 							{
-								printSqlError( e );
+								printError( e );
 								sendMessage( sender, Messages.internalError );
 							}
 						}
@@ -267,17 +241,14 @@ public class Plugin extends JavaPlugin {
 					{
 						try
 						{
-							mainInterface.unregisterTitle( args[1] );
-							sendMessage( sender, format( Messages.titleUnregistered, "title_name", args[1] ) );
+							if ( mainInterface.unregisterTitle( args[1] ) == false )
+								sendMessage( sender, format( Messages.titleNotExists, "title_name", args[1] ) );
+							else
+								sendMessage( sender, format( Messages.titleUnregistered, "title_name", args[1] ) );
 						}
-						catch ( Title.DoesntExistException e )
+						catch ( Exception e )
 						{
-							sendMessage( sender, format( Messages.titleNotExists, "title_name", args[1] ) );
-						}
-						catch ( SQLException e )
-						{
-							printSqlError( e );
-							sendMessage( sender, Messages.internalError );
+							printError( e );
 						}
 					}
 					else
@@ -295,27 +266,26 @@ public class Plugin extends JavaPlugin {
 					{
 						try
 						{
-							mainInterface.getPlayer( args[1] ).giveTitle( mainInterface.getTitle( args[2] ) );
-
+							Player _player = mainInterface.getPlayer( args[1] );
+							if ( _player == null )
+								sendMessage( sender, format( Messages.playerNotExists, "player_name", args[1] ) );
+							else
+							{
+								Title title = mainInterface.getTitle( args[2] );
+								if ( title == null )
+									sendMessage( sender, format( Messages.titleNotExists, "title_name", args[2] ) );
+								else
+								{
+									if ( _player.giveTitle( title ) == false )
+										sendMessage( sender, format( format( Messages.playerOwnsTitle, "title_name", args[2] ), "player_name", args[1] ) );
+								}
+							}
 								
 							sender.sendMessage( format( format( Messages.titleGiven, "title_name", args[2] ), "player_name", args[1] ) );
 						}
-						catch ( Player.DoesntExistException e )
+						catch ( Exception e )
 						{
-							sendMessage( sender, format( Messages.playerNotExists, "player_name", args[1] ) );
-						}
-						catch ( Title.DoesntExistException e )
-						{
-							sendMessage( sender, format( Messages.titleNotExists, "title_name", args[2] ) );
-						}
-						catch ( Player.AlreadyOwnsTitleException e )
-						{
-							sendMessage( sender, format( format( Messages.playerOwnsTitle, "title_name", args[2] ), "player_name", args[1] ) );
-						}
-						catch ( SQLException e )
-						{
-							printSqlError( e );
-							sendMessage( sender, Messages.internalError );
+							printError( e );
 						}
 					}
 					else
@@ -333,26 +303,24 @@ public class Plugin extends JavaPlugin {
 					{ 
 						try
 						{
-							mainInterface.getPlayer( args[1] ).takeTitle( mainInterface.getTitle( args[2] ) );
-							
-							sender.sendMessage( format( format( Messages.titleTaken, "title_name", args[2] ), "player_name", args[1] ) );
+							Player _player = mainInterface.getPlayer( args[1] );
+							if ( _player == null )
+								sendMessage( sender, format( Messages.playerNotExists, "player_name", args[1] ) );
+							else
+							{
+								Title title = mainInterface.getTitle( args[2] );
+								if ( title == null )
+									sendMessage( sender, format( Messages.titleNotExists, "title_name", args[2] ) );
+								else
+								{
+									if ( _player.takeTitle( title ) == false )
+										sendMessage( sender, format( format( Messages.playerNotOwnsTitle, "title_name", args[2] ), "player_name", args[1] ) );
+								}
+							}
 						}
-						catch ( Player.DoesntExistException e )
+						catch ( Exception e )
 						{
-							sendMessage( sender, format( Messages.playerNotExists, "player_name", args[1] ) );
-						}
-						catch ( Title.DoesntExistException e )
-						{
-							sendMessage( sender, format( Messages.titleNotExists, "title_name", args[2] ) );
-						}
-						catch ( Player.DoesntOwnTitleException e )
-						{
-							sendMessage( sender, format( format( Messages.playerNotOwnsTitle, "title_name", args[2] ), "player_name", args[1] ) );
-						}
-						catch ( SQLException e )
-						{
-							printSqlError( e );
-							sendMessage( sender, Messages.internalError );
+							printError( e );
 						}
 					}
 					else
@@ -376,8 +344,6 @@ public class Plugin extends JavaPlugin {
 			titleDatabase.close();
 			collectionDatabase.close();
 			titleVariationDatabase.close();
-			
-			Database.disconnect();
 			
 			print( "Gracefully disabled." );
 		}
@@ -404,13 +370,6 @@ public class Plugin extends JavaPlugin {
 			collectionDatabase.open();
 			titleVariationDatabase.open();
 
-			String dbHost = config.getString( "sql_host", "localhost" );
-			String dbPort = config.getString( "sql_port", "3306" );
-			String dbUsername = config.getString( "sql_username", "root" );
-			String dbPassword = config.getString( "sql_password", "" );
-			String dbDatabase = config.getString( "sql_database", "my_titles" );
-			String dbTablePrefix = config.getString( "sql_table_prefix", "" );
-
 			String defaultPrefix = config.getString( "default_prefix", "" );
 			String defaultSuffix = config.getString( "default_suffix", "" );
 			Settings.defaultAffixes = new Title.Affixes( defaultPrefix, defaultSuffix );
@@ -433,9 +392,6 @@ public class Plugin extends JavaPlugin {
 			Messages.titleUnregistered = config.getString( "message_title_unregistered", null );
 			Messages.titleUse = config.getString( "message_title_use", null );
 			
-			// Connect to SQL database
-			Database.connectHost( "mysql", dbHost, dbPort, dbDatabase, dbUsername, dbPassword, dbTablePrefix );
-			
 			// Register events:
 			PluginManager pluginManager = this.getServer().getPluginManager();
 			pluginManager.registerEvent( Type.PLAYER_JOIN, playerListener, Priority.Normal, this );
@@ -443,11 +399,6 @@ public class Plugin extends JavaPlugin {
 			pluginManager.registerEvent( Type.PLAYER_CHAT, playerListener, Priority.Highest, this );
 			
 			print( "Enabled." );
-		}
-		catch ( SQLException e )
-		{
-			printSqlError( e );
-			print( "Did you configure the database connection details correctly?" );
 		}
 		catch ( Exception e ) {
 			
@@ -480,8 +431,8 @@ public class Plugin extends JavaPlugin {
 			
 			// Install player database:
 			Header header = new Header();
-			header.addString( (short)16 );
-			header.addInt64();
+			header.addString( (short)16 ); // Player name
+			header.addInt64(); // Title in use
 			playerDatabase = new com.dannycrafts.myTitles.database.Database( new File( this.getDataFolder() + "/data/players" ), (short)0, header );
 
 			// Install title database:

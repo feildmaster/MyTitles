@@ -20,8 +20,9 @@
 
 package com.dannycrafts.myTitles;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.io.IOException;
+
+import com.dannycrafts.myTitles.database.*;
 
 public class Title {
 	
@@ -32,19 +33,15 @@ public class Title {
 		this.id = id;
 	}
 	
-	public void addVariation( Variation.Info variation ) throws SQLException, Variation.AlreadyExistsException, Variation.InvalidNameException
+	public boolean addVariation( Variation.Info variation ) throws IOException, Variation.InvalidNameException
 	{
-		try
-		{
-			if ( !isValidName( variation.name ) ) throw new Variation.InvalidNameException();
-			Database.update( "INSERT INTO " + Database.formatTableName( "title_variations" ) + " ( title_id, name, prefix, suffix ) VALUES ( " + id + ", '" + variation.name + "', " + Database.formatString( variation.affixes.prefix ) + ", " + Database.formatString( variation.affixes.suffix ) + ");" );
-		}
-		catch ( SQLException e )
-		{
-			if ( e.getErrorCode() == Database.Codes.uniqueDuplicate )
-				throw new Variation.AlreadyExistsException();
-			throw e;
-		}
+		if ( !isValidName( variation.name ) ) throw new Variation.InvalidNameException();
+		
+		return Plugin.titleVariationDatabase.addRow(
+					new Int64Cell( id ), new StringCell( variation.name ),
+					new StringCell( variation.affixes.prefix ),
+					new StringCell( variation.affixes.suffix )
+				) != -1;
 	}
 	
 	public boolean equals( Object other )
@@ -53,67 +50,56 @@ public class Title {
 		return this.id == ((Title)other).id;
 	}
 	
-	public Affixes getAffixes() throws SQLException
+	public Affixes getAffixes() throws IOException
 	{
-		ResultSet result = Database.query( "SELECT prefix, suffix FROM " + Database.formatTableName( "titles" ) + " WHERE id = " + id + ";" );
-		result.first();
-		return new Affixes( result.getString( "prefix" ), result.getString( "suffix" ) );
-	}
-	
-	public Info getInfo() throws SQLException
-	{
-		ResultSet result = Database.query( "SELECT name, prefix, suffix FROM " + Database.formatTableName( "titles" ) + " WHERE id = " + id + ";" );
-		result.first();
-		return new Info( result.getString( "name" ), result.getString( "prefix" ), result.getString( "suffix" ) );
-	}
-	
-	public String getName() throws SQLException
-	{
-		ResultSet result = Database.query( "SELECT name FROM " + Database.formatTableName( "titles" ) + " WHERE id = " + id + ";" );
-		result.first();
-		return result.getString( "name" );
-	}
-	
-	public String getPrefix() throws SQLException
-	{
-		ResultSet result = Database.query( "SELECT prefix FROM " + Database.formatTableName( "titles" ) + " WHERE id = " + id + ";" );
-		result.first();
-		return result.getString( "prefix" );
-	}
-	
-	public String getSuffix() throws SQLException
-	{
-		ResultSet result = Database.query( "SELECT suffix FROM " + Database.formatTableName( "titles" ) + " WHERE id = " + id + ";" );
-		result.first();
-		return result.getString( "suffix" );
-	}
-	
-	public Variation getVariation( String variationName ) throws SQLException, Variation.DoesntExistException
-	{
-		if ( variationName != null )
-		{
-			ResultSet result = Database.query( "SELECT id FROM " + Database.formatTableName( "title_variations" ) + " WHERE title_id = " + id + " AND name = '" + variationName + "';" );
-			if ( result.first() == false ) throw new Variation.DoesntExistException();
-			
-			return new Variation( this, result.getLong( "id" ) );
-		}
+		Row row = Plugin.titleDatabase.getRow( id );
 		
-		return new Variation( this, 0L );
+		return new Affixes( row.readString( 2 ), row.readString( 3 ) );
 	}
 	
-	public Variation[] getVariations() throws SQLException
+	public Info getInfo() throws IOException
 	{
-		ResultSet result = Database.query( "SELECT id FROM " + Database.formatTableName( "title_variations" ) + " WHERE title_id = " + id + ";" );
-		result.last();
-		Variation[] variations = new Variation[result.getRow()];
-		result.beforeFirst();
+		Row row = Plugin.titleDatabase.getRow( id );
 		
-		int i = 0;
-		while ( result.next() )
-		{
-			variations[i] = new Variation( this, result.getLong( "id" ) );
-			i++;
-		}
+		return new Info( row.readString( 1 ), row.readString( 2 ), row.readString( 3 ) );
+	}
+	
+	public String getName() throws IOException
+	{
+		Row row = Plugin.titleDatabase.getRow( id );
+		
+		return row.readString( 1 );
+	}
+	
+	public String getPrefix() throws IOException
+	{
+		Row row = Plugin.titleDatabase.getRow( id );
+		
+		return row.readString( 2 );
+	}
+	
+	public String getSuffix() throws IOException
+	{
+		Row row = Plugin.titleDatabase.getRow( id );
+		
+		return row.readString( 3 );
+	}
+	
+	public Variation getVariation( String variationName ) throws IOException
+	{
+		long variation = Plugin.titleVariationDatabase.findRow( new SearchCriteria( (short)0, id ), new SearchCriteria( (short)1, variationName ) );
+		if ( variation == -1 ) return null;
+		
+		return new Variation( id, variation );
+	}
+	
+	public Variation[] getVariations() throws IOException
+	{
+		long[] variationIds = Plugin.titleVariationDatabase.findRows( (short)0, id );
+		Variation[] variations = new Variation[variationIds.length];
+		
+		for ( int i = 0; i < variationIds.length; i++ )
+			variations[i] = new Variation( id, variationIds[i] );
 		
 		return variations;
 	}
@@ -135,7 +121,7 @@ public class Title {
 		return true;
 	}
 	
-	public void putVariations( Variation.Info[] variations ) throws SQLException, Exception
+	public void putVariations( Variation.Info[] variations ) throws IOException, Variation.InvalidNameException
 	{
 		Variation[] existingVariations = getVariations();
 		
@@ -160,7 +146,7 @@ public class Title {
 			if ( variationUsed == false )
 			{
 				removeVariation( existingVariation );
-				existingVariations[i] = null;;
+				existingVariations[i] = null;
 			}
 			else
 			{
@@ -192,40 +178,45 @@ public class Title {
 		}
 	}
 	
-	public void removeVariation( String variationName ) throws SQLException, Variation.DoesntExistException
+	public boolean removeVariation( String variationName ) throws IOException
 	{
-		int affected = Database.update( "DELETE FROM " + Database.formatTableName( "title_variations" ) + " WHERE title_id = " + id + " AND name = '" + variationName + "';" );
-		if ( affected == 0 ) throw new Variation.DoesntExistException();
+		long variation = Plugin.titleVariationDatabase.findRow( new SearchCriteria( (short)0, id ), new SearchCriteria( (short)1, variationName ) );
+		if ( variation == -1 ) return false;
+		
+		return Plugin.titleVariationDatabase.removeRow( variation );
 	}
 	
-	public void removeVariation( Variation variation ) throws SQLException
+	public boolean removeVariation( Variation variation ) throws IOException
 	{
-		Database.update( "DELETE FROM " + Database.formatTableName( "title_variations" ) + " WHERE title_id = " + id + " AND name = '" + variation.getName() + "';" );
+		return Plugin.titleVariationDatabase.removeRow( variation.id );
 	}
 	
-	public void setAffixes( Affixes affixes ) throws SQLException
+	public void setAffixes( Affixes affixes ) throws IOException
 	{
-		Database.update( "UPDATE " + Database.formatTableName( "titles" ) + " SET prefix = " + Database.formatString( affixes.prefix ) + ", suffix = " + Database.formatString( affixes.suffix ) + " WHERE id = " + id + ";" );
+		Plugin.titleDatabase.updateCell( id, (short)2, affixes.prefix );
+		Plugin.titleDatabase.updateCell( id, (short)3, affixes.suffix );
 	}
 	
-	public void setInfo( Info info ) throws SQLException
+	public void setInfo( Info info ) throws IOException
 	{
-		Database.update( "UPDATE " + Database.formatTableName( "titles" ) + " SET name = " + Database.formatString( info.name ) + ", prefix = " + Database.formatString( info.affixes.prefix ) + ", suffix = " + Database.formatString( info.affixes.suffix ) + " WHERE id = " + id + ";" );
+		Plugin.titleDatabase.updateCell( id, (short)1, info.name );
+		Plugin.titleDatabase.updateCell( id, (short)2, info.affixes.prefix );
+		Plugin.titleDatabase.updateCell( id, (short)3, info.affixes.suffix );
 	}
 	
-	public void setName( String name ) throws SQLException
+	public void setName( String name ) throws IOException
 	{
-		Database.update( "UPDATE " + Database.formatTableName( "titles" ) + " SET name = " + Database.formatString( name ) + " WHERE id = " + id + ";" );
+		Plugin.titleDatabase.updateCell( id, (short)1, name );
 	}
 	
-	public void setPrefix( String prefix ) throws SQLException
+	public void setPrefix( String prefix ) throws IOException
 	{
-		Database.update( "UPDATE " + Database.formatTableName( "titles" ) + " SET prefix = " + Database.formatString( prefix ) + " WHERE id = " + id + ";" );
+		Plugin.titleDatabase.updateCell( id, (short)2, prefix );
 	}
 	
-	public void setSuffix( String suffix ) throws SQLException, Variation.DoesntExistException
+	public void setSuffix( String suffix ) throws IOException
 	{
-		Database.update( "UPDATE " + Database.formatTableName( "titles" ) + " SET suffix = " + Database.formatString( suffix ) + " WHERE id = " + id + ";" );
+		Plugin.titleDatabase.updateCell( id, (short)3, suffix );
 	}
 	
 	public static class Affixes
@@ -257,7 +248,5 @@ public class Title {
 		}
 	}
 	
-	public static class AlreadyExistsException extends Exception {};
-	public static class DoesntExistException extends Exception {};
 	public static class InvalidNameException extends Exception {};
 }
