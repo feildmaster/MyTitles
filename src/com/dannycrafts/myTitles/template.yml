@@ -21,39 +21,93 @@
 
 
 
-##### Messages #####
+# Messages support colors. To implement a color into a message, start the text you want to color with '&x', where 'x' is a color code from '0' to '9' or 'a' to 'f'. Here is the list of supported color codes:
 
-# When you try to use a player-only command on the console:
-message_command_player_only: Command is for player use only.
-# When a problem occurred on the server while processing your command:
-message_internal_error: An internal error occurred.
+# '&0' - Black
+# '&1' - Dark Blue
+# '&2' - Dark Green
+# '&3' - Teal
+# '&4' - Dark Red
+# '&5' - Purple
+# '&6' - Gold
+# '&7' - Gray
+# '&8' - Dark Gray
+# '&9' - Blue
+# '&a' - Bright Green
+# '&b' - Aqua
+# '&c' - Red
+# '&d' - Pink
+# '&e' - Yellow
+# '&f' - White
+
+# Also note that player names might contain color codes too, so it is a good practice to start off with a color code after player - and display names.
+
+# Most template messages have parameters, to include a parameter in the message, use '$parameter_name$' where 'parameter_name' is the name of the parameter.
+
+
+
+##### Game Formats #####
+
+# The chat format: (player_name, message)
+chat: "<$player_name$&f> $message$"
+
+# When a player leaves the game: (player_name)
+player_quit: "&e$player_name$&e has left the game."
+
+# When a player joins the game: (player_name)
+player_join: "&e$player_name$&e has joined the game."
+
+
+
+##### Command Messages #####
+
 # When the name of a title that you are trying to register is invalid: (name)
-message_invalid_title_name: '"$name$" is invalid.'
+invalid_title_name: "&c\"$name$\" is invalid."
+
+# The format for listing a title: (number, title_name, display_name)
+list_title: "&6#$number$: $title_name$ - \"$display_name$&6\""
+
 # When you try to execute a command but don't have the permissions for it:
-message_no_permissions: You don't have the required permissions to do that.
+no_permissions: "&cYou don't have the required permissions to do that."
+
 # When you don't own the title you want to use: (title_name)
-message_no_title: You don't own title "$title_name$".
+no_title: "&cYou don't own title \"$title_name$\"."
+
 # When you don't own any titles:
-message_no_titles: You don't own any titles (yet).
+no_titles: "&6You don't own any titles (yet)."
+
+# When you try to use a title by number, but the number is out of range:
+number_out_of_range: "&cNumber is out of range."
+
 # When a player already owns a certain title: (player_name, title_name)
-message_player_owns_title: Player "$player_name$" already owns title "$title_name$".
+player_owns_title: "&cPlayer $player_name$&c already owns title \"$title_name$\"."
+
 # When a player doesn't exist: (player_name)
-message_player_not_exists: Player "$player_name$" doens't exist.
+player_not_exists: "&cPlayer \"$player_name$\" doens't exist."
+
 # When a player doesn't own a title:
-message_player_not_owns_title: Player "$player_name$" doesn't own title "$title_name$".
+player_not_owns_title: "&c$player_name$&c doesn't own title \"$title_name$\"."
+
 # When a player stops wearing a title by using the 'clear' command: (name)
-message_title_clear: You stopped using a title, you now look like "$name$".
+title_clear: "&aYou stopped using a title, you now look like \"$name$\"&a."
+
 # When you try to register a title with a name that exists already: (title_name)
-message_title_exists: A title with the same name is registered already.
+title_exists: "&cA title with the same name is registered already."
+
 # When you give a title to someone: (title_name, player_name)
-message_title_given: Title "$title_name$" has been given to "$player_name$".
+title_given: "&aTitle \"$title_name$\" has been given to $player_name$&a."
+
 # When you try to unregister a title with a name that doesn't exist: (title_name)
-message_title_not_exists: There is no title registered with that name.
+title_not_exists: "&cThere is no title registered with that name."
+
 # When you have registered a title: (title_name)
-message_title_registered: Title "$title_name$" has been registered.
+title_registered: "&aTitle \"$title_name$\" has been registered."
+
 # When you take a title away from someone: (title_name, player_name)
-message_title_taken: Title "$title_name$" has been taken from "$player_name$".
+title_taken: "&aTitle \"$title_name$\" has been taken from $player_name$."
+
 # When you have unregistered a title: (title_name)
-message_title_unregistered: Title "$title_name$" has been unregistered.
+title_unregistered: "&aTitle \"$title_name$\" has been unregistered."
+
 # When a players starts using a title: (display_name, title_name)
-message_title_use: You are now called "$display_name$".
+title_use: "&aYou are now called \"$display_name$\"&a."

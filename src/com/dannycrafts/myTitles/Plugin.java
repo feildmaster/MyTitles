@@ -188,7 +188,7 @@ public class Plugin extends JavaPlugin
 								_player.useTitle( selectedTitle );
 							}
 							else
-								player.sendMessage( "Number is out of range." );
+								player.sendMessage( Template.numberOutOfRange );
 						}
 						catch ( Exception e )
 						{
@@ -369,26 +369,33 @@ public class Plugin extends JavaPlugin
 			// Load config.yml
 			Configuration config = new Configuration( new File( this.getDataFolder() + "/config.yml" ) );
 			config.load();
+			Configuration template = new Configuration( new File( this.getDataFolder() + "/template.yml" ) );
+			template.load();
 			
 			String defaultPrefix = config.getString( "default_prefix", "" );
 			String defaultSuffix = config.getString( "default_suffix", "" );
 			Config.defaultAffixes = new Title.Affixes( defaultPrefix, defaultSuffix );
 
-			Template.invalidTitleName = formatColors( config.getString( "message_invalid_title_name", "" ) );
-			Template.noPermissions = config.getString( "message_no_permissions", "" );
-			Template.noTitle = config.getString( "message_no_title", "" );
-			Template.noTitles = config.getString( "message_no_titles", "" );
-			Template.playerOwnsTitle = config.getString( "message_player_owns_title", "" );
-			Template.playerNotExists = config.getString( "message_player_not_exists", "" );
-			Template.playerNotOwnsTitle = config.getString( "message_player_not_owns_title", "" );
-			Template.titleClear = config.getString( "message_title_clear", "" );
-			Template.titleExists = config.getString( "message_title_exists", "" );
-			Template.titleGiven = config.getString( "message_title_given", "" );
-			Template.titleNotExists = config.getString( "message_title_not_exists", "" );
-			Template.titleRegistered = config.getString( "message_title_registered", "" );
-			Template.titleTaken = config.getString( "message_title_taken", "" );
-			Template.titleUnregistered = config.getString( "message_title_unregistered", "" );
-			Template.titleUse = formatColors( config.getString( "message_title_use", "" ) );
+			Template.chat = formatColors( template.getString( "chat", "" ) );
+			Template.invalidTitleName = formatColors( template.getString( "invalid_title_name", "" ) );
+			Template.listTitle = formatColors( template.getString( "list_title", "" ) );
+			Template.noPermissions = formatColors( template.getString( "no_permissions", "" ) );
+			Template.noTitle = formatColors( template.getString( "no_title", "" ) );
+			Template.noTitles = formatColors( template.getString( "no_titles", "" ) );
+			Template.numberOutOfRange = formatColors( template.getString( "number_out_of_range", "" ) );
+			Template.playerJoin = formatColors( template.getString( "player_join", "" ) );
+			Template.playerOwnsTitle = formatColors( template.getString( "player_owns_title", "" ) );
+			Template.playerNotExists = formatColors( template.getString( "player_not_exists", "" ) );
+			Template.playerNotOwnsTitle = formatColors( template.getString( "player_not_owns_title", "" ) );
+			Template.playerQuit = formatColors( template.getString( "player_quit", "" ) );
+			Template.titleClear = formatColors( template.getString( "title_clear", "" ) );
+			Template.titleExists = formatColors( template.getString( "title_exists", "" ) );
+			Template.titleGiven = formatColors( template.getString( "title_given", "" ) );
+			Template.titleNotExists = formatColors( template.getString( "title_not_exists", "" ) );
+			Template.titleRegistered = formatColors( template.getString( "title_registered", "" ) );
+			Template.titleTaken = formatColors( template.getString( "title_taken", "" ) );
+			Template.titleUnregistered = formatColors( template.getString( "title_unregistered", "" ) );
+			Template.titleUse = formatColors( template.getString( "title_use", "" ) );
 			
 			// Open databases:
 			playerDatabase.open();
@@ -492,15 +499,20 @@ public class Plugin extends JavaPlugin
 	
 	protected static class Template
 	{
-		public final static String commandPlayerOnly = "This command is for player use only.";
+		public static String chat;
+		public final static String commandPlayerOnly = "\u00A74This command is for player use only.";
 		public final static String internalError = "\u00A74An internal error has occurred.";
 		public static String invalidTitleName;
+		public static String listTitle;
 		public static String noPermissions;
 		public static String noTitle;
 		public static String noTitles;
+		public static String numberOutOfRange;
+		public static String playerJoin;
 		public static String playerOwnsTitle;
 		public static String playerNotExists;
 		public static String playerNotOwnsTitle;
+		public static String playerQuit;
 		public static String titleClear;
 		public static String titleExists;
 		public static String titleGiven;

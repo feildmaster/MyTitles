@@ -41,7 +41,7 @@ public class PlayerListener extends org.bukkit.event.player.PlayerListener {
 		{
 			Plugin.playerDatabase.addUniqueRow( new SearchCriteria( (short)0, event.getPlayer().getName() ), new StringCell( event.getPlayer().getName() ), new Int64Cell( -1 ) );
 			
-			event.setJoinMessage( Plugin.joinMessages( plugin.mainInterface.getPlayer( event.getPlayer() ).getDisplayName(), " joined the game." ) );
+			event.setJoinMessage( Plugin.formatParameters( Plugin.Template.playerJoin, "player_name", plugin.mainInterface.getPlayer( event.getPlayer() ).getDisplayName() ) );
 		}
 		catch ( IOException e )
 		{
@@ -54,7 +54,7 @@ public class PlayerListener extends org.bukkit.event.player.PlayerListener {
 		try
 		{
 			Player player = plugin.mainInterface.getPlayer( event.getPlayer() );
-			event.getPlayer().setDisplayName( player.getDisplayName() );
+			event.setFormat( Plugin.formatParameters( Plugin.formatParameters( Plugin.Template.chat, "player_name", player.getDisplayName() ), "message", event.getMessage() ) );
 		}
 		catch ( Exception e )
 		{
@@ -66,7 +66,7 @@ public class PlayerListener extends org.bukkit.event.player.PlayerListener {
 	{
 		try
 		{
-			event.setJoinMessage( plugin.mainInterface.getPlayer( event.getPlayer() ).getDisplayName() + " left the game." );
+			event.setJoinMessage( Plugin.formatParameters( Plugin.Template.playerQuit, "player_name", plugin.mainInterface.getPlayer( event.getPlayer() ).getDisplayName() ) );
 		}
 		catch ( Exception e )
 		{
