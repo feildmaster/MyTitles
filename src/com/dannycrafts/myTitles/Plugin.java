@@ -131,7 +131,11 @@ public class Plugin extends JavaPlugin
 							Player _player = mainInterface.getPlayer( player );
 							Title title = mainInterface.getIndependentTitle( args[1] );
 							if ( title != null )
+							{
 								_player.useTitle( title );
+								
+								player.sendMessage( formatParameters( formatParameters( Template.titleUse, "title_name", title.getName() ), "display_name", _player.getDisplayName( title ) ) );	
+							}
 							else
 								sender.sendMessage( formatParameters( Template.noTitle, "title_name", args[1] ) );
 						}
@@ -157,6 +161,8 @@ public class Plugin extends JavaPlugin
 					{
 						Player _player = mainInterface.getPlayer( player );
 						_player.resetTitle();
+						
+						player.sendMessage( formatParameters( Template.titleClear, "display_name", _player.getDisplayName() ) );
 					}
 					catch ( Exception e )
 					{
@@ -186,6 +192,8 @@ public class Plugin extends JavaPlugin
 								
 								Player _player = mainInterface.getPlayer( player );
 								_player.useTitle( selectedTitle );
+								
+								player.sendMessage( formatParameters( formatParameters( Template.titleUse, "title_name", selectedTitle.getName() ), "display_name", _player.getDisplayName( selectedTitle ) ) );
 							}
 							else
 								player.sendMessage( Template.numberOutOfRange );
@@ -287,10 +295,10 @@ public class Plugin extends JavaPlugin
 								{
 									if ( _player.giveTitle( title ) == false )
 										sender.sendMessage( formatParameters( formatParameters( Template.playerOwnsTitle, "title_name", args[2] ), "player_name", args[1] ) );
+									else
+										sender.sendMessage( formatParameters( formatParameters( Template.titleGiven, "title_name", args[2] ), "player_name", args[1] ) );
 								}
 							}
-								
-							sender.sendMessage( formatParameters( formatParameters( Template.titleGiven, "title_name", args[2] ), "player_name", args[1] ) );
 						}
 						catch ( Exception e )
 						{
@@ -323,7 +331,9 @@ public class Plugin extends JavaPlugin
 								else
 								{
 									if ( _player.takeTitle( title ) == false )
-										sender.sendMessage( formatParameters( formatParameters( Template.playerNotOwnsTitle, "title_name", args[2] ), "player_name", args[1] ) );
+										sender.sendMessage( formatParameters( formatParameters( Template.playerNotOwnsTitle, "title_name", args[2] ), "player_name", _player.getDisplayName() ) );
+									else
+										sender.sendMessage( formatParameters( formatParameters( Template.titleTaken, "title_name", args[2] ), "player_name", _player.getDisplayName() ) );
 								}
 							}
 						}
