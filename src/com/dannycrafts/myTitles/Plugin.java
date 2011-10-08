@@ -375,7 +375,7 @@ public class Plugin extends JavaPlugin
 			
 			String defaultPrefix = config.getString( "default_prefix", "" );
 			String defaultSuffix = config.getString( "default_suffix", "" );
-			Settings.defaultAffixes = new Title.Affixes( defaultPrefix, defaultSuffix );
+			Config.defaultAffixes = new Title.Affixes( defaultPrefix, defaultSuffix );
 
 			Messages.invalidTitleName = formatColors( config.getString( "message_invalid_title_name", null ) );
 			Messages.noPermissions = config.getString( "message_no_permissions", null );
@@ -513,7 +513,7 @@ public class Plugin extends JavaPlugin
 		public static String titleUse;
 	}
 	
-	protected static class Settings
+	protected static class Config
 	{
 		public static Title.Affixes defaultAffixes;
 	}

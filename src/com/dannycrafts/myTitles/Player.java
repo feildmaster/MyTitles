@@ -63,7 +63,7 @@ public class Player {
 		Row row = Plugin.playerDatabase.getRow( id );
 		long titleId = row.readInt64( 1 );
 		if ( titleId < 0 )
-			return getDisplayName( Plugin.Settings.defaultAffixes );
+			return getDisplayName( Plugin.Config.defaultAffixes );
 		
 		return getDisplayName( new Title( titleId ) );
 	}
