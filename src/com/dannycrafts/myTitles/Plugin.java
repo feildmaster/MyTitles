@@ -377,21 +377,21 @@ public class Plugin extends JavaPlugin
 			String defaultSuffix = config.getString( "default_suffix", "" );
 			Config.defaultAffixes = new Title.Affixes( defaultPrefix, defaultSuffix );
 
-			Messages.invalidTitleName = formatColors( config.getString( "message_invalid_title_name", null ) );
-			Messages.noPermissions = config.getString( "message_no_permissions", null );
-			Messages.noTitle = config.getString( "message_no_title", null );
-			Messages.noTitles = config.getString( "message_no_titles", null );
-			Messages.playerOwnsTitle = config.getString( "message_player_owns_title", null );
-			Messages.playerNotExists = config.getString( "message_player_not_exists", null );
-			Messages.playerNotOwnsTitle = config.getString( "message_player_not_owns_title", null );
-			Messages.titleClear = config.getString( "message_title_clear", null );
-			Messages.titleExists = config.getString( "message_title_exists", null );
-			Messages.titleGiven = config.getString( "message_title_given", null );
-			Messages.titleNotExists = config.getString( "message_title_not_exists", null );
-			Messages.titleRegistered = config.getString( "message_title_registered", null );
-			Messages.titleTaken = config.getString( "message_title_taken", null );
-			Messages.titleUnregistered = config.getString( "message_title_unregistered", null );
-			Messages.titleUse = formatColors( config.getString( "message_title_use", null ) );
+			Messages.invalidTitleName = formatColors( config.getString( "message_invalid_title_name", "" ) );
+			Messages.noPermissions = config.getString( "message_no_permissions", "" );
+			Messages.noTitle = config.getString( "message_no_title", "" );
+			Messages.noTitles = config.getString( "message_no_titles", "" );
+			Messages.playerOwnsTitle = config.getString( "message_player_owns_title", "" );
+			Messages.playerNotExists = config.getString( "message_player_not_exists", "" );
+			Messages.playerNotOwnsTitle = config.getString( "message_player_not_owns_title", "" );
+			Messages.titleClear = config.getString( "message_title_clear", "" );
+			Messages.titleExists = config.getString( "message_title_exists", "" );
+			Messages.titleGiven = config.getString( "message_title_given", "" );
+			Messages.titleNotExists = config.getString( "message_title_not_exists", "" );
+			Messages.titleRegistered = config.getString( "message_title_registered", "" );
+			Messages.titleTaken = config.getString( "message_title_taken", "" );
+			Messages.titleUnregistered = config.getString( "message_title_unregistered", "" );
+			Messages.titleUse = formatColors( config.getString( "message_title_use", "" ) );
 			
 			// Open databases:
 			playerDatabase.open();
