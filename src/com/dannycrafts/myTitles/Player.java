@@ -55,7 +55,7 @@ public class Player {
 		String displayName = getName();
 		if ( fixes.prefix != null) displayName = fixes.prefix + displayName;
 		if ( fixes.suffix != null ) displayName += fixes.suffix;
-		return Plugin.joinMessages( Plugin.formatColors( displayName ) );
+		return Plugin.formatColors( displayName );
 	}
 	
 	public String getDisplayName() throws IOException
