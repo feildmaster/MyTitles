@@ -88,8 +88,8 @@ player_not_exists: "&cPlayer \"$player_name$\" doens't exist."
 # When a player doesn't own a title:
 player_not_owns_title: "&c$player_name$&c doesn't own title \"$title_name$\"."
 
-# When a player stops wearing a title by using the 'clear' command: (name)
-title_clear: "&eYou stopped using a title, you now look like \"$name$\"&e."
+# When a player stops wearing a title by using the 'clear' command: (display_name)
+title_clear: "&eYou stopped using a title, you now look like \"$display_name$\"&e."
 
 # When you try to register a title with a name that exists already: (title_name)
 title_exists: "&cA title with the same name is registered already."
