@@ -169,7 +169,9 @@ public class MyTitles {
 	
 	public boolean unregisterTitle( String name ) throws IOException
 	{		
-		return unregisterTitle( getTitle( name ) );
+		Title title = getTitle( name );
+		if ( title == null ) return false;
+		return unregisterTitle( title );
 	}
 	
 	public boolean unregisterTitle( Title title ) throws IOException
