@@ -43,7 +43,7 @@ public class StringCell implements Cell
 			return false;
 		
 		for ( int i = 0; i < dataLength; i++ )
-			if ( this.data.charAt( i ) != (char)data[i] )
+			if ( Character.toLowerCase( this.data.charAt( i ) ) != Character.toLowerCase( (char)data[i] ) )
 				return false;
 		
 		return true;
