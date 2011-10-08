@@ -65,7 +65,7 @@ public class Plugin extends JavaPlugin
 	
 	protected static String formatParameters( String message, String varName, String value )
 	{
-		return message.replace( "$" + varName + "$", "\u00A7f" + value + "\u00A7f" );
+		return message.replace( "$" + varName + "$", value );
 	}
 	
 	protected static String joinMessages( String... messages )
