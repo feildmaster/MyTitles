@@ -65,7 +65,7 @@ player_join: "&e$player_name$&e has joined the game."
 invalid_title_name: "&c\"$name$\" is invalid."
 
 # The format for listing a title: (number, title_name, display_name)
-list_title: "&6#$number$: $title_name$ - \"$display_name$&6\""
+list_title: "&e#$number$: $title_name$ - \"$display_name$&e\""
 
 # When you try to execute a command but don't have the permissions for it:
 no_permissions: "&cYou don't have the required permissions to do that."
@@ -74,7 +74,7 @@ no_permissions: "&cYou don't have the required permissions to do that."
 no_title: "&cYou don't own title \"$title_name$\"."
 
 # When you don't own any titles:
-no_titles: "&6You don't own any titles (yet)."
+no_titles: "&eYou don't own any titles (yet)."
 
 # When you try to use a title by number, but the number is out of range:
 number_out_of_range: "&cNumber is out of range."
@@ -89,25 +89,25 @@ player_not_exists: "&cPlayer \"$player_name$\" doens't exist."
 player_not_owns_title: "&c$player_name$&c doesn't own title \"$title_name$\"."
 
 # When a player stops wearing a title by using the 'clear' command: (name)
-title_clear: "&aYou stopped using a title, you now look like \"$name$\"&a."
+title_clear: "&eYou stopped using a title, you now look like \"$name$\"&e."
 
 # When you try to register a title with a name that exists already: (title_name)
 title_exists: "&cA title with the same name is registered already."
 
 # When you give a title to someone: (title_name, player_name)
-title_given: "&aTitle \"$title_name$\" has been given to $player_name$&a."
+title_given: "&eTitle \"$title_name$\" has been given to $player_name$&e."
 
 # When you try to unregister a title with a name that doesn't exist: (title_name)
 title_not_exists: "&cThere is no title registered with that name."
 
 # When you have registered a title: (title_name)
-title_registered: "&aTitle \"$title_name$\" has been registered."
+title_registered: "&eTitle \"$title_name$\" has been registered."
 
 # When you take a title away from someone: (title_name, player_name)
-title_taken: "&aTitle \"$title_name$\" has been taken from $player_name$."
+title_taken: "&eTitle \"$title_name$\" has been taken from $player_name$&e."
 
 # When you have unregistered a title: (title_name)
-title_unregistered: "&aTitle \"$title_name$\" has been unregistered."
+title_unregistered: "&eTitle \"$title_name$\" has been unregistered."
 
 # When a players starts using a title: (display_name, title_name)
-title_use: "&aYou are now called \"$display_name$\"&a."
+title_use: "&eYou are now called \"$display_name$\"&e."
