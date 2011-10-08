@@ -109,7 +109,7 @@ public class Plugin extends JavaPlugin
 						}
 					}
 					else
-						sender.sendMessage( Messages.noTitles );
+						sender.sendMessage( Template.noTitles );
 				}
 				catch ( Exception e )
 				{
@@ -119,7 +119,7 @@ public class Plugin extends JavaPlugin
 			else if ( player == null )
 				sender.sendMessage( this.getDescription().getName() + " v" + this.getDescription().getVersion() );
 			else
-				sender.sendMessage( Messages.noPermissions );
+				sender.sendMessage( Template.noPermissions );
 		}
 		else if ( args.length > 0 )
 		{
@@ -136,7 +136,7 @@ public class Plugin extends JavaPlugin
 							if ( title != null )
 								_player.useTitle( title );
 							else
-								sender.sendMessage( formatParameters( Messages.noTitle, "title_name", args[1] ) );
+								sender.sendMessage( formatParameters( Template.noTitle, "title_name", args[1] ) );
 						}
 						catch ( Exception e )
 						{
@@ -147,9 +147,9 @@ public class Plugin extends JavaPlugin
 						sender.sendMessage( commandLabel + " \"use\" title_name" );
 				}
 				else if ( player == null )
-					sender.sendMessage( Messages.commandPlayerOnly );
+					sender.sendMessage( Template.commandPlayerOnly );
 				else
-					sender.sendMessage( Messages.noPermissions );
+					sender.sendMessage( Template.noPermissions );
 			}
 			
 			else if ( args[0].equalsIgnoreCase( "clear" ) )
@@ -164,13 +164,13 @@ public class Plugin extends JavaPlugin
 					catch ( Exception e )
 					{
 						printError( e );
-						sender.sendMessage( Messages.internalError );
+						sender.sendMessage( Template.internalError );
 					}
 				}
 				else if ( player == null )
-					sender.sendMessage( Messages.commandPlayerOnly );
+					sender.sendMessage( Template.commandPlayerOnly );
 				else
-					sender.sendMessage( Messages.noPermissions );
+					sender.sendMessage( Template.noPermissions );
 			}
 			
 			else if ( args[0].equalsIgnoreCase( "usenr" ) )
@@ -202,9 +202,9 @@ public class Plugin extends JavaPlugin
 						sender.sendMessage( commandLabel + " \"usenr\" title_number" );
 				}
 				else if ( player == null )
-					sender.sendMessage( Messages.commandPlayerOnly );
+					sender.sendMessage( Template.commandPlayerOnly );
 				else
-					sender.sendMessage( Messages.noPermissions );
+					sender.sendMessage( Template.noPermissions );
 			}
 			
 			else if ( args[0].equalsIgnoreCase( "register" ) )
@@ -221,18 +221,18 @@ public class Plugin extends JavaPlugin
 							try
 							{
 								if ( mainInterface.registerTitle( args[1], prefix, postfix ) == false )
-									sender.sendMessage( formatParameters( Messages.titleExists, "title_name", args[1] ) );
+									sender.sendMessage( formatParameters( Template.titleExists, "title_name", args[1] ) );
 								else
-									sender.sendMessage( formatParameters( Messages.titleRegistered, "title_name", args[1] ) );
+									sender.sendMessage( formatParameters( Template.titleRegistered, "title_name", args[1] ) );
 							}
 							catch ( Title.InvalidNameException e)
 							{
-								sender.sendMessage( formatParameters( Messages.invalidTitleName, "name", args[1] ) );
+								sender.sendMessage( formatParameters( Template.invalidTitleName, "name", args[1] ) );
 							}
 							catch ( Exception e )
 							{
 								printError( e );
-								sender.sendMessage( Messages.internalError );
+								sender.sendMessage( Template.internalError );
 							}
 						}
 						else
@@ -242,7 +242,7 @@ public class Plugin extends JavaPlugin
 						sender.sendMessage( commandLabel + " \"register\" title_name prefix \":\" postfix" );
 				}
 				else
-					sender.sendMessage( Messages.noPermissions );
+					sender.sendMessage( Template.noPermissions );
 			}
 			
 			else if ( args[0].equalsIgnoreCase( "unregister" ) )
@@ -254,9 +254,9 @@ public class Plugin extends JavaPlugin
 						try
 						{
 							if ( mainInterface.unregisterTitle( args[1] ) == false )
-								sender.sendMessage( formatParameters( Messages.titleNotExists, "title_name", args[1] ) );
+								sender.sendMessage( formatParameters( Template.titleNotExists, "title_name", args[1] ) );
 							else
-								sender.sendMessage( formatParameters( Messages.titleUnregistered, "title_name", args[1] ) );
+								sender.sendMessage( formatParameters( Template.titleUnregistered, "title_name", args[1] ) );
 						}
 						catch ( Exception e )
 						{
@@ -267,7 +267,7 @@ public class Plugin extends JavaPlugin
 						sender.sendMessage( commandLabel + " \"unregister\" title_name" );
 				}
 				else
-					sender.sendMessage( Messages.noPermissions );
+					sender.sendMessage( Template.noPermissions );
 			}
 			
 			else if ( args[0].equalsIgnoreCase( "give" ) )
@@ -280,20 +280,20 @@ public class Plugin extends JavaPlugin
 						{
 							Player _player = mainInterface.getPlayer( args[1] );
 							if ( _player == null )
-								sender.sendMessage( formatParameters( Messages.playerNotExists, "player_name", args[1] ) );
+								sender.sendMessage( formatParameters( Template.playerNotExists, "player_name", args[1] ) );
 							else
 							{
 								Title title = mainInterface.getTitle( args[2] );
 								if ( title == null )
-									sender.sendMessage( formatParameters( Messages.titleNotExists, "title_name", args[2] ) );
+									sender.sendMessage( formatParameters( Template.titleNotExists, "title_name", args[2] ) );
 								else
 								{
 									if ( _player.giveTitle( title ) == false )
-										sender.sendMessage( formatParameters( formatParameters( Messages.playerOwnsTitle, "title_name", args[2] ), "player_name", args[1] ) );
+										sender.sendMessage( formatParameters( formatParameters( Template.playerOwnsTitle, "title_name", args[2] ), "player_name", args[1] ) );
 								}
 							}
 								
-							sender.sendMessage( formatParameters( formatParameters( Messages.titleGiven, "title_name", args[2] ), "player_name", args[1] ) );
+							sender.sendMessage( formatParameters( formatParameters( Template.titleGiven, "title_name", args[2] ), "player_name", args[1] ) );
 						}
 						catch ( Exception e )
 						{
@@ -304,7 +304,7 @@ public class Plugin extends JavaPlugin
 						sender.sendMessage( commandLabel + " \"give\" player_name title_name" );
 				}
 				else
-					sender.sendMessage( Messages.noPermissions );
+					sender.sendMessage( Template.noPermissions );
 			}
 			
 			else if ( args[0].equalsIgnoreCase( "take" ) )
@@ -317,16 +317,16 @@ public class Plugin extends JavaPlugin
 						{
 							Player _player = mainInterface.getPlayer( args[1] );
 							if ( _player == null )
-								sender.sendMessage( formatParameters( Messages.playerNotExists, "player_name", args[1] ) );
+								sender.sendMessage( formatParameters( Template.playerNotExists, "player_name", args[1] ) );
 							else
 							{
 								Title title = mainInterface.getTitle( args[2] );
 								if ( title == null )
-									sender.sendMessage( formatParameters( Messages.titleNotExists, "title_name", args[2] ) );
+									sender.sendMessage( formatParameters( Template.titleNotExists, "title_name", args[2] ) );
 								else
 								{
 									if ( _player.takeTitle( title ) == false )
-										sender.sendMessage( formatParameters( formatParameters( Messages.playerNotOwnsTitle, "title_name", args[2] ), "player_name", args[1] ) );
+										sender.sendMessage( formatParameters( formatParameters( Template.playerNotOwnsTitle, "title_name", args[2] ), "player_name", args[1] ) );
 								}
 							}
 						}
@@ -377,21 +377,21 @@ public class Plugin extends JavaPlugin
 			String defaultSuffix = config.getString( "default_suffix", "" );
 			Config.defaultAffixes = new Title.Affixes( defaultPrefix, defaultSuffix );
 
-			Messages.invalidTitleName = formatColors( config.getString( "message_invalid_title_name", "" ) );
-			Messages.noPermissions = config.getString( "message_no_permissions", "" );
-			Messages.noTitle = config.getString( "message_no_title", "" );
-			Messages.noTitles = config.getString( "message_no_titles", "" );
-			Messages.playerOwnsTitle = config.getString( "message_player_owns_title", "" );
-			Messages.playerNotExists = config.getString( "message_player_not_exists", "" );
-			Messages.playerNotOwnsTitle = config.getString( "message_player_not_owns_title", "" );
-			Messages.titleClear = config.getString( "message_title_clear", "" );
-			Messages.titleExists = config.getString( "message_title_exists", "" );
-			Messages.titleGiven = config.getString( "message_title_given", "" );
-			Messages.titleNotExists = config.getString( "message_title_not_exists", "" );
-			Messages.titleRegistered = config.getString( "message_title_registered", "" );
-			Messages.titleTaken = config.getString( "message_title_taken", "" );
-			Messages.titleUnregistered = config.getString( "message_title_unregistered", "" );
-			Messages.titleUse = formatColors( config.getString( "message_title_use", "" ) );
+			Template.invalidTitleName = formatColors( config.getString( "message_invalid_title_name", "" ) );
+			Template.noPermissions = config.getString( "message_no_permissions", "" );
+			Template.noTitle = config.getString( "message_no_title", "" );
+			Template.noTitles = config.getString( "message_no_titles", "" );
+			Template.playerOwnsTitle = config.getString( "message_player_owns_title", "" );
+			Template.playerNotExists = config.getString( "message_player_not_exists", "" );
+			Template.playerNotOwnsTitle = config.getString( "message_player_not_owns_title", "" );
+			Template.titleClear = config.getString( "message_title_clear", "" );
+			Template.titleExists = config.getString( "message_title_exists", "" );
+			Template.titleGiven = config.getString( "message_title_given", "" );
+			Template.titleNotExists = config.getString( "message_title_not_exists", "" );
+			Template.titleRegistered = config.getString( "message_title_registered", "" );
+			Template.titleTaken = config.getString( "message_title_taken", "" );
+			Template.titleUnregistered = config.getString( "message_title_unregistered", "" );
+			Template.titleUse = formatColors( config.getString( "message_title_use", "" ) );
 			
 			// Open databases:
 			playerDatabase.open();
@@ -432,6 +432,13 @@ public class Plugin extends JavaPlugin
 			{
 				InputStream configResource = getClass().getResourceAsStream( "config.yml" );
 				copyFile( configResource, new FileOutputStream( configDestination ) );
+			}
+			// Install template.yml
+			File templateDestination = new File( getDataFolder() + "/template.yml" );
+			if ( !templateDestination.exists() )
+			{
+				InputStream templateResource = getClass().getResourceAsStream( "template.yml" );
+				copyFile( templateResource, new FileOutputStream( templateDestination ) );
 			}
 			
 			// Install player database:
@@ -486,7 +493,7 @@ public class Plugin extends JavaPlugin
 		e.printStackTrace();
 	}
 	
-	protected static class Messages
+	protected static class Template
 	{
 		public final static String commandPlayerOnly = "This command is for player use only.";
 		public final static String internalError = "\u00A74An internal error has occurred.";
