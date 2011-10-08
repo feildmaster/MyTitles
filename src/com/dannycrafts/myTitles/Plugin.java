@@ -377,7 +377,6 @@ public class Plugin extends JavaPlugin
 			String defaultSuffix = config.getString( "default_suffix", "" );
 			Settings.defaultAffixes = new Title.Affixes( defaultPrefix, defaultSuffix );
 
-			Messages.commandPlayerOnly = formatColors( config.getString( "message_command_player_only", null ) );
 			Messages.invalidTitleName = formatColors( config.getString( "message_invalid_title_name", null ) );
 			Messages.noPermissions = config.getString( "message_no_permissions", null );
 			Messages.noTitle = config.getString( "message_no_title", null );
@@ -495,8 +494,8 @@ public class Plugin extends JavaPlugin
 	
 	protected static class Messages
 	{
-		public static String commandPlayerOnly;
-		public static String internalError;
+		public final static String commandPlayerOnly = "This command is for player use only.";
+		public final static String internalError = "\u00A74An internal error has occurred.";
 		public static String invalidTitleName;
 		public static String noPermissions;
 		public static String noTitle;
