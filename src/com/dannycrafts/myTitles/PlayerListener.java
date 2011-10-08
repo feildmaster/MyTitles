@@ -41,7 +41,7 @@ public class PlayerListener extends org.bukkit.event.player.PlayerListener {
 		{
 			Plugin.playerDatabase.addUniqueRow( new SearchCriteria( (short)0, event.getPlayer().getName() ), new StringCell( event.getPlayer().getName() ), new Int64Cell( -1 ) );
 			
-			event.setJoinMessage( plugin.mainInterface.getPlayer( event.getPlayer() ).getDisplayName() + " joined the game." );
+			event.setJoinMessage( Plugin.joinMessages( plugin.mainInterface.getPlayer( event.getPlayer() ).getDisplayName(), " joined the game." ) );
 		}
 		catch ( IOException e )
 		{
