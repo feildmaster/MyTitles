@@ -176,10 +176,11 @@ public class MyTitles {
 	
 	public boolean unregisterTitle( Title title ) throws IOException
 	{
-		long[] players = Plugin.collectionDatabase.findRows( (short)1, title.id );
-		for ( int i = 0; i < players.length; i++ )
+		long[] collections = Plugin.collectionDatabase.findRows( (short)1, title.id );
+		for ( int i = 0; i < collections.length; i++ )
 		{
-			Player player = new Player( plugin, players[i] );
+			Row row = Plugin.collectionDatabase.getRow( collections[i] );
+			Player player = new Player( plugin, row.readInt64( 0 ) );
 				
 			org.bukkit.entity.Player onlinePlayer = plugin.getServer().getPlayer( player.getName() );
 			if ( onlinePlayer != null )
