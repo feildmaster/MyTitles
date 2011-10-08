@@ -63,14 +63,23 @@ public class Plugin extends JavaPlugin
 		original.close();
 	}
 	
-	protected String formatParameters( String message, String varName, String value )
+	protected static String formatParameters( String message, String varName, String value )
 	{
-		return message.replace( "$" + varName + "$", value );
+		return message.replace( "$" + varName + "$", "\u00A7f" + value + "\u00A7f" );
+	}
+	
+	protected static String joinMessages( String... messages )
+	{
+		String totalMessage = "\u00A7f";
+		for ( String message : messages )
+			totalMessage += message + "\u00A7f";
+				
+		return totalMessage;
 	}
 	
 	protected static String formatColors( String message )
 	{
-		return ChatColor.stripColor( message.replace( "&", "\u00A7" ) );
+		return message.replace( "&", "\u00A7" );
 	}
 	
 	public MyTitles getInterface( String usagePluginId )
