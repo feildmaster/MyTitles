@@ -103,10 +103,7 @@ public class Plugin extends JavaPlugin
 					if ( titles.length != 0 )
 					{
 						for ( int i = 0; i < titles.length; i++ )
-						{
-							Title.Info titleInfo = titles[i].getInfo();
-							sender.sendMessage( "#" + ( i + 1 ) + ": " + titleInfo.name + ": \"" + myTitlesPlayer.getDisplayName( titleInfo.affixes ) + "\"" );
-						}
+							sender.sendMessage( formatParameters( formatParameters( formatParameters( Template.listTitle, "number", "" + ( i + 1 ) ), "title_name", titles[i].getName() ), "display_name", myTitlesPlayer.getDisplayName( titles[i] ) ) );
 					}
 					else
 						sender.sendMessage( Template.noTitles );
