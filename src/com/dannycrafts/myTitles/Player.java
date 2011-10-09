@@ -144,6 +144,11 @@ public class Player {
 	{
 		String titleName = title.getName();
 		
+		Row player = Plugin.playerDatabase.getRow( id );
+		long selectedTitle = player.readInt64( 1 );
+		if ( selectedTitle == title.id )
+			Plugin.playerDatabase.updateCell( id, (short)1, -1L );
+		
 		long collection = Plugin.collectionDatabase.findRow( new SearchCriteria( (short)0, id ), new SearchCriteria( (short)1, title.id ) );
 		if ( collection == -1 ) return false;
 		
