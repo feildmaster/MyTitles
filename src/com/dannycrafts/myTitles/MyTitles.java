@@ -181,10 +181,6 @@ public class MyTitles {
 		{
 			Row row = Plugin.collectionDatabase.getRow( collections[i] );
 			Player player = new Player( plugin, row.readInt64( 0 ) );
-				
-			org.bukkit.entity.Player onlinePlayer = plugin.getServer().getPlayer( player.getName() );
-			if ( onlinePlayer != null )
-				onlinePlayer.sendMessage( "You lost title \"" + title.getName() + "\"." );
 			
 			if ( player.takeTitle( title ) == false ) return false;
 		}
