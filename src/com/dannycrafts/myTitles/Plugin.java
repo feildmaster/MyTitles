@@ -220,8 +220,9 @@ public class Plugin extends JavaPlugin
 					{
 						if ( args[2].contains( ":" ) )
 						{
-							String prefix = args[2].substring( 0, args[2].indexOf( ':' ) );
-							String postfix = args[2].substring( prefix.length() + 1 );
+							String prefix = args[2].substring( 0, args[2].indexOf( ':' ) ).replace( '_', ' ' );
+							Plugin.print( prefix );
+							String postfix = args[2].substring( prefix.length() + 1 ).replace( '_', ' ' );
 								
 							try
 							{
