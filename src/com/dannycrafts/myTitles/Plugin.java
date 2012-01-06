@@ -418,7 +418,7 @@ public class Plugin extends JavaPlugin
 			PluginManager pluginManager = this.getServer().getPluginManager();
 			pluginManager.registerEvent( Type.PLAYER_JOIN, playerListener, Priority.Normal, this );
 			pluginManager.registerEvent( Type.PLAYER_QUIT, playerListener, Priority.Normal, this );
-			pluginManager.registerEvent( Type.PLAYER_CHAT, playerListener, Priority.Highest, this );
+			pluginManager.registerEvent( Type.PLAYER_CHAT, playerListener, Priority.High, this );
 			
 			print( "Enabled." );
 		}
